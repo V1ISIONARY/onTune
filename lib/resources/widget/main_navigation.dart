@@ -6,7 +6,7 @@ import 'package:ontune/frontend/search.dart';
 import 'package:ontune/resources/schema.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../backend/cubit/bnc_cubit.dart';
-import '../../frontend/menu/new_music.dart';
+import 'menu/new_music.dart';
 import 'floating_music.dart';
 
 class MainWrapper extends StatefulWidget {
