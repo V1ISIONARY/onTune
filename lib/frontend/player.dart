@@ -1,103 +1,121 @@
-import 'dart:convert';
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:ontune/resources/schema.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:http/http.dart' as http;
+
+import '../backend/services/audio_manager/controller.dart';
+import '../backend/services/audio_manager/model.dart/classification.dart';
 import '../resources/widget/fade.dart';
 
 class Player extends StatefulWidget {
-  final Color backgroundColor;
   final Color textColor;
-  final VoidCallback onClose;
   final String youtubeUrl;
-  final String musicTitle;
-  final String writer;
-
+  final VoidCallback onClose;
+  final Color backgroundColor;
 
   const Player({
-    Key? key,
-    required this.musicTitle,
-    required this.writer,
+    Key? key, 
     required this.youtubeUrl,
     required this.backgroundColor,
     required this.textColor,
     required this.onClose,
   }) : super(key: key);
-
+  
   @override
   State<Player> createState() => _PlayerState();
 }
 
-class _PlayerState extends State<Player> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  final YoutubeExplode _yt = YoutubeExplode();
+class _PlayerState extends State<Player> with TickerProviderStateMixin {
+  
+  final AudioController _audioController = AudioController();
+  late AnimationController _animationController;
+  late Animation<Offset> _scrollAnimation;
+  String musicTitle = '';
+  String writer = '';
   bool _isPlaying = false;
-  bool _isMuted = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-
-  late String musicTitle;
-  late String writer;
-
+  double _opacity = 0.0;  
+  
   @override
   void initState() {
     super.initState();
     _initializeAudio();
 
-    _audioPlayer.playerStateStream.listen((state) {
+    // Listening to the player state changes
+    _audioController.audioPlayer.playerStateStream.listen((state) {
       setState(() => _isPlaying = state.playing);
     });
 
-    _audioPlayer.durationStream.listen((d) {
+    // Listening to the audio duration
+    _audioController.audioPlayer.durationStream.listen((d) {
       setState(() => _duration = d ?? Duration.zero);
     });
 
-    _audioPlayer.positionStream.listen((p) {
+    // Listening to the audio position
+    _audioController.audioPlayer.positionStream.listen((p) {
       setState(() => _position = p);
+    });
+
+    // Initialize AnimationController
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 5), // Duration of one loop
+    )..repeat(); // Repeating the animation indefinitely
+
+    // Create Tween for sliding the text
+    _scrollAnimation = Tween<Offset>(
+      begin: Offset(1.0, 0.0),  // Starting position (off screen to the right)
+      end: Offset(-1.0, 0.0),  // Ending position (off screen to the left)
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.linear,  // Smooth continuous movement
+    ));
+
+    _startFadeOut();
+
+  }
+
+  Future<void> _initializeAudio() async {
+    final classification? audioData = await _audioController.initializeAudio(widget.youtubeUrl);
+
+    if (audioData != null) {
+      setState(() {
+        musicTitle = audioData.musicTitle;
+        writer = audioData.musicWriter;
+      });
+    } else {
+      print("Failed to initialize audio.");
+    }
+
+    // Updating playback status and duration
+    setState(() {
+      _isPlaying = _audioController.isPlaying;
+      _duration = _audioController.duration;
+      _position = _audioController.position;
     });
   }
 
-Future<void> _initializeAudio() async {
-  
-    print("Initializing audio..."); // Add this print statement
-    try {
-      final response = await http.get(
-        Uri.parse('http://localhost:3000/get-audio?url=${Uri.encodeComponent(widget.youtubeUrl)}')
-      );
-
-      print("Response Body: ${response.body}"); // Log the response body
-
-      if (response.statusCode == 200) {
-        try {
-          final data = jsonDecode(response.body);
-
-          final audioUrl = data['audioUrl'];
-
-          if (audioUrl != null) {
-            await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(audioUrl)));
-            setState(() {});  // Trigger UI update
-          } else {
-            print('Error: audioUrl is null');
-          }
-        } catch (e) {
-          print('Error parsing JSON: $e');
-          print('Response Body: ${response.body}');  // Log the raw response body
+  void _startFadeOut() {
+    // Delay before starting the fade-out
+    Future.delayed(Duration(seconds: 3), () { // Adjust timing as needed
+      Timer.periodic(Duration(milliseconds: 100), (timer) {
+        if (_opacity >= 1.0) {
+          timer.cancel();
+        } else {
+          setState(() {
+            _opacity += 0.1;
+          });
         }
-      } else {
-        print('Failed to fetch audio URL: ${response.reasonPhrase}');
-        print('Response body: ${response.body}');  // Log the response body to see the error
-      }
-    } catch (e) {
-      print("Error during audio initialization: $e");
-    }
-}
+      });
+    });
+  }
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
-    _yt.close();
+    _audioController.dispose();
     super.dispose();
   }
 
@@ -167,7 +185,7 @@ Future<void> _initializeAudio() async {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 130),
+                    SizedBox(height: 110),
                     Expanded(
                       child: Column(
                         children: [
@@ -185,7 +203,7 @@ Future<void> _initializeAudio() async {
                                 fit: StackFit.expand, // Ensure the image and text fill the available space
                                 children: [
                                   Image.network(
-                                    'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2J2bDRzZmNraDJ4cHA3NHlmY24xd3JzcWJjNWdmOWduemJyYmxnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dYdEHJKB52aFB7k3bE/giphy.webp',
+                                    'https://ph.pinterest.com/pin/837036280740711560/',
                                     fit: BoxFit.cover, // Ensures the image covers the area
                                     errorBuilder: (context, error, stackTrace) {
                                       return Container(
@@ -214,53 +232,13 @@ Future<void> _initializeAudio() async {
                               ),
                             )
                           ),
-                          // Transform.translate(
-                          //   offset: Offset(0, -10.0),
-                          //   child: Container(
-                          //     height: 150,
-                          //     width: double.infinity,
-                          //     margin: EdgeInsets.symmetric(horizontal: 50),
-                          //     decoration: BoxDecoration(
-                          //       color: widgetPricolor, // Assuming widgetPricolor is defined properly
-                          //       borderRadius: BorderRadius.only(
-                          //         bottomRight: Radius.circular(10),
-                          //         bottomLeft: Radius.circular(10),
-                          //       ),
-                          //     ),
-                          //     child: Container(
-                          //       margin: EdgeInsets.all(10),
-                          //       child: Column(
-                          //         crossAxisAlignment: CrossAxisAlignment.start,
-                          //         children: [
-                          //           Row(
-                          //             crossAxisAlignment: CrossAxisAlignment.start,
-                          //             children: [
-                          //               Padding(
-                          //                 padding: EdgeInsets.only(top: 2.5, right: 5),
-                          //                 child: Icon(
-                          //                   Icons.lyrics_sharp,
-                          //                   color: Colors.white,
-                          //                   size: 15.0, // Optional size adjustment
-                          //                 ),
-                          //               ),
-                          //               Text(
-                          //                 'Lyrics',
-                          //                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
-                          //               ),
-                          //             ]
-                          //           )
-                          //         ],
-                          //       )
-                          //     )
-                          //   ),
-                          // ),
                         ],
                       )
                     ),
                   ]
                 ),
                 Positioned(
-                  bottom: 90,
+                  bottom: 120,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -279,13 +257,36 @@ Future<void> _initializeAudio() async {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          widget.musicTitle ?? 'Loading...',
-                                          style: TextStyle(fontSize: 15, color: widget.textColor),
-                                          textAlign: TextAlign.center,
+                                        Container(
+                                          width: 200,  // Fixed width of the container
+                                          height: 25,  // Fixed height of the container
+                                          child: ClipRect(  // Ensure the SlideTransition does not overflow
+                                            child: musicTitle.length < 30  // If the music title is shorter than 20 characters
+                                                ? // No SlideTransition if the title is short
+                                                SingleChildScrollView(  // Text will not scroll horizontally if the title is short
+                                                    scrollDirection: Axis.horizontal,
+                                                    child: Text(
+                                                      musicTitle.isNotEmpty ? musicTitle : 'Title',
+                                                      style: TextStyle(fontSize: 15, color: widget.textColor),
+                                                      textAlign: TextAlign.start,  // Align text to the start (left side)
+                                                    ),
+                                                  )
+                                                : // SlideTransition only when the title is long enough
+                                                SlideTransition(
+                                                    position: _scrollAnimation,  // Apply SlideTransition only for longer titles
+                                                    child: SingleChildScrollView(
+                                                      scrollDirection: Axis.horizontal,  // Allow horizontal scrolling
+                                                      child: Text(
+                                                        musicTitle.isNotEmpty ? musicTitle : 'Title',
+                                                        style: TextStyle(fontSize: 15, color: widget.textColor),
+                                                        textAlign: TextAlign.start,  // Align text to the start (left side)
+                                                      ),
+                                                    ),
+                                                  ),
+                                          ),
                                         ),
                                         Text(
-                                          widget.writer ?? 'Billie Ellish',
+                                          limitText(writer.isNotEmpty ? writer : 'Comperser', 20), // Handle null or empty check
                                           style: TextStyle(fontSize: 10, color: secondary_color),
                                           textAlign: TextAlign.center,
                                         ),
@@ -322,7 +323,7 @@ Future<void> _initializeAudio() async {
                               ),
                             ),
                             Container(
-                              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                               child: SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
                                   thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0), // Removes the thumb
@@ -336,18 +337,18 @@ Future<void> _initializeAudio() async {
                                   inactiveColor: Colors.white24,    // Set the color of the unfilled (remaining) part
                                   onChanged: (value) {
                                     final position = Duration(seconds: value.toInt());
-                                    _audioPlayer.seek(position);
+                                    _audioController.audioPlayer.seek(position);
                                   },
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
+                              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(_formatDuration(_position), style: TextStyle(fontSize: 11, color: widget.textColor)),
-                                  Text(_formatDuration(_duration), style: TextStyle(fontSize: 11, color: widget.textColor)),
+                                  Text("${_audioController.formatDuration(_audioController.position)}", style: TextStyle(fontSize: 11, color: widget.textColor)),
+                                  Text("${_audioController.formatDuration(_audioController.duration)}", style: TextStyle(fontSize: 11, color: widget.textColor)),
                                 ],
                               ),
                             ),
@@ -392,8 +393,11 @@ Future<void> _initializeAudio() async {
                                         _isPlaying ? Icons.pause : Icons.play_arrow,
                                         color: Colors.black, // Icon color from the widget properties
                                       ),
-                                      onPressed: _togglePlayPause,
-                                    ),
+                                      onPressed: () {
+                                        // Toggle play/pause on button press
+                                        _audioController.togglePlayPause();
+                                      },
+                                    )
                                   ),
                                 ),
                                 Expanded(
@@ -446,7 +450,7 @@ Future<void> _initializeAudio() async {
                     child: Padding(
                       padding: EdgeInsets.only(top: 20, left: 20),
                       child: Text(
-                        'Videos from ${widget.writer}',
+                        'Videos from ${writer}',
                         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
                       ),
                     ),
@@ -467,37 +471,43 @@ Future<void> _initializeAudio() async {
               ),
             ),
           ),
-          SizedBox(height: 200)
+          SizedBox(height: 20),
+          Container(
+            height: 250,
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: widgetPricolor, // Set the background color
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 0, // Position this container at the bottom of the Stack
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 100)
         ]
       ),
     );
   }
 
-  void _togglePlayPause() {
-    if (_isPlaying) {
-      _audioPlayer.pause();
-    } else {
-      _audioPlayer.play();
-    }
-  }
+}
 
-  void _stop() {
-    _audioPlayer.stop();
-    _audioPlayer.seek(Duration.zero);
-  }
-
-  void _toggleMute() {
-    setState(() {
-      _isMuted = !_isMuted;
-      _audioPlayer.setVolume(_isMuted ? 0 : 1);
-    });
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "$twoDigitMinutes:$twoDigitSeconds";
-  }
-  
+String limitText(String text, int maxLength) {
+  return text.length > maxLength ? '${text.substring(0, maxLength)}...' : text;
 }
