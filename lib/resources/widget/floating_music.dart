@@ -107,6 +107,9 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
           maxChildSize: 1.0,     // Make it cover the full screen
           builder: (context, scrollController) {
             return Player(
+              musicTitle: "WildFlower",
+              writer: "Billie Ellish",
+              youtubeUrl: 'https://www.youtube.com/watch?v=l08Zw-RY__Q',
               backgroundColor: Color.fromARGB(255, 2, 149, 85),
               textColor: Colors.white,
               onClose: () {
@@ -115,7 +118,6 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
                 });
                 Navigator.of(context).pop();
               },
-              youtubeUrl: 'https://www.youtube.com/watch?v=O1PkZaFy61Y',
             );
           },
         ),
