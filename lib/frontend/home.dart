@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:ontune/resources/widget/menu/new_music.dart';
 import 'package:ontune/frontend/search.dart';
 import 'package:page_transition/page_transition.dart';
 

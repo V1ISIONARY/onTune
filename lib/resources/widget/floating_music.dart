@@ -107,7 +107,7 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
           maxChildSize: 1.0,     // Make it cover the full screen
           builder: (context, scrollController) {
             return Player(
-              youtubeUrl: 'https://www.youtube.com/watch?v=wuvtoyVi7vY',
+              youtubeUrl: 'https://music.youtube.com/watch?v=bl2DzNG-haU',
               backgroundColor: Color.fromARGB(255, 2, 149, 85),
               textColor: Colors.white,
               onClose: () {
