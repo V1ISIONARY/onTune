@@ -9,6 +9,15 @@ sealed class OnTuneState extends Equatable {
 
 class LoadingTune extends OnTuneState {}
 
+class FetchExplorer extends OnTuneState {
+  final List<Randomized> explorerList;
+
+  const FetchExplorer(this.explorerList);
+
+  @override
+  List<Object> get props => [explorerList];
+}
+
 class FetchedAudio extends OnTuneState {
   
   final String musicTitle;

@@ -1,33 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:ontune/frontend/player.dart';
-import 'package:page_transition/page_transition.dart';
+import '../../frontend/home.dart';
 
 class FloatingMusic extends StatefulWidget {
-  const FloatingMusic({Key? key}) : super(key: key);
+  final String initialAudioUrl;
+  const FloatingMusic({Key? key, required this.initialAudioUrl}) : super(key: key);
 
   @override
   FloatingMusicState createState() => FloatingMusicState();
 }
 
 class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  bool _isVisible = false; // Controls visibility of the mini container
-  int _currentIndex = 0;
   final PageController _pageController = PageController();
-  bool _isFullScreen = false; // Track if full-screen is active
+  late AnimationController _controller;
+  bool _isFullScreen = false;
+  bool _isVisible = false;
+  int _currentIndex = 0;
+  
+  late ValueNotifier<String> updatedWriter;
+  late ValueNotifier<String> updatedTitle;
+  late ValueNotifier<String> updatedUrl;
+  late ValueNotifier<String> updatedIcon;
+  String currentUrl = "";
 
-  final List<Widget> _pages = [
-    _buildPage('WILDFLOWER', 'Billie Eilish'),
-    _buildPage('Birds of feather', 'Billie Eilish'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
-  // Define the pages to display
-  static Widget _buildPage(String title, String artist) {
+    updatedWriter = Home.updatedWriter;
+    updatedTitle = Home.updatedTitle;
+    updatedUrl = Home.updatedUrl;
+    updatedIcon = Home.updatedIcon;
+    currentUrl = widget.initialAudioUrl;
+
+    updatedUrl.addListener(updateInfo);
+
+    print("Initial URL: $currentUrl");
+  }
+
+  List<Widget> get _pages {
+    return [
+      _buildPage(updatedIcon.value, updatedTitle.value, updatedWriter.value),
+      _buildPage(updatedIcon.value, updatedTitle.value, updatedWriter.value),
+    ];
+  }
+
+  @override
+  void dispose() {
+    updatedUrl.removeListener(updateInfo);
+    _controller.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void updateInfo() {
+    if (mounted) {
+      setState(() {
+        currentUrl = updatedUrl.value;
+      });
+      print("Updated URL: $currentUrl");
+    }
+  }
+
+  static Widget _buildPage(String thumbnail, String title, String artist) {
     return Container(
       color: Colors.transparent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.white,
+              ),
+              child: ClipRRect(
+                child: Image.network(
+                  thumbnail,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
           SizedBox(width: 10),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -56,7 +117,7 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
                     style: TextStyle(fontSize: 9, fontWeight: FontWeight.w400, color: Colors.white54),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ],
@@ -64,50 +125,34 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  // Toggle mini container visibility
   void toggleContainer() {
     setState(() {
       _isVisible = !_isVisible;
     });
   }
 
-  // Handle full-screen state toggle
   void _toggleFullScreen(bool isFullScreen) {
     setState(() {
       _isFullScreen = isFullScreen;
     });
   }
 
-  // Handle vertical swipe gesture
   void _onVerticalDragEnd(DragEndDetails details) {
     if (details.velocity.pixelsPerSecond.dy < 0) {
-      // Swipe up to show player screen as a full-screen modal overlay
+      print("YouTube URL: ${widget.initialAudioUrl}");
+
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (context) => DraggableScrollableSheet(
-          initialChildSize: 1.0, // Start fully expanded
-          minChildSize: 1.0,     // Prevent dragging down to minimize
-          maxChildSize: 1.0,     // Make it cover the full screen
+          initialChildSize: 1.0,
+          minChildSize: 1.0,
+          maxChildSize: 1.0,
           builder: (context, scrollController) {
             return Player(
-              youtubeUrl: 'https://music.youtube.com/watch?v=bl2DzNG-haU',
+              youtubeUrl: updatedUrl.value,
+              thumbnail: updatedIcon.value,
               backgroundColor: Color.fromARGB(255, 2, 149, 85),
               textColor: Colors.white,
               onClose: () {
@@ -121,15 +166,12 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
         ),
       );
     } else {
-      // Swipe down to close mini container
       setState(() {
         _isVisible = false;
       });
-
     }
   }
 
-  // Handle horizontal swipe gesture
   void _onHorizontalDragEnd(DragEndDetails details) {
     if (details.velocity.pixelsPerSecond.dx > 0) {
       if (_currentIndex > 0) _currentIndex--;
@@ -146,36 +188,25 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
       onHorizontalDragEnd: _onHorizontalDragEnd,
       child: Stack(
         children: [
-          // Mini music player container
           AnimatedOpacity(
             opacity: _isFullScreen ? 0 : 1,
             duration: const Duration(milliseconds: 300),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              height: _isVisible ? 80 : 0,
+              height: _isVisible ? 70 : 0,
               curve: Curves.easeInOut,
               child: Visibility(
                 visible: _isVisible,
                 child: Container(
-                  margin: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 2, 149, 85),
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Container(
-                    margin: EdgeInsets.only(top: 10, left: 10, bottom: 10, right: 10),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     child: Row(
                       children: [
-                        // Album artwork
-                        Container(
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: Colors.white,
-                          ),
-                        ),
-                        // PageView for songs
                         Expanded(
                           child: PageView.builder(
                             controller: _pageController,
@@ -188,27 +219,28 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
                             },
                           ),
                         ),
-                        // Control icons
-                        SizedBox(
-                          width: 100,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              IconButton(
-                                iconSize: 23,
-                                icon: const Icon(Icons.connected_tv_sharp, color: Colors.white),
-                                onPressed: () {},
-                              ),
-                              IconButton(
-                                iconSize: 23,
-                                icon: const Icon(Icons.play_arrow, color: Colors.white),
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              iconSize: 20,
+                              icon: const Icon(Icons.connected_tv_sharp, color: Colors.white),
+                              onPressed: () {},
+                              padding: EdgeInsets.zero,
+                              constraints: BoxConstraints(),
+                            ),
+                            SizedBox(width: 10),
+                            IconButton(
+                              iconSize: 20,
+                              icon: const Icon(Icons.play_arrow, color: Colors.white),
+                              onPressed: () {},
+                              padding: EdgeInsets.zero,
+                              constraints: BoxConstraints(),
+                            ),
+                          ],
                         ),
                       ],
-                    )
+                    ),
                   ),
                 ),
               ),

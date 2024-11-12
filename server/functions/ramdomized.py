@@ -3,6 +3,7 @@ import yt_dlp
 import json
 
 def get_playlist_info(playlist_url):
+    
     ydl_opts = {
         'quiet': True,  # Suppress all logs
         'extract_flat': True,  # Only extract playlist info (without downloading)
@@ -14,10 +15,23 @@ def get_playlist_info(playlist_url):
             playlist_info = ydl.extract_info(playlist_url, download=False)
 
             if 'entries' in playlist_info:
+                
                 # Extract the URLs (href) of the songs in the playlist
-                song_info = [{'title': entry['title'], 'url': entry['url']} for entry in playlist_info['entries']]
+                song_info = [
+                    {
+                    'title': entry['title'], 
+                    'writer': entry.get('uploader') or entry.get('artist') or entry.get('creator', 'Unknown'),
+                    'url': entry['url'],
+                    'image_url': entry.get('thumbnails', [{}])[-1].get('url', '')  # Get the highest resolution image URL
+                    } for entry in playlist_info['entries']
+                ]
                 song_count = len(song_info)  # Total count of songs
-                return json.dumps({'songCount': song_count, 'songInfo': song_info})
+                
+                return json.dumps({
+                    'songCount': song_count, 
+                    'songInfo': song_info
+                })
+                
             else:
                 return json.dumps({'error': 'No entries found in the playlist'})
         except Exception as e:

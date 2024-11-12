@@ -10,17 +10,24 @@ import 'menu/new_music.dart';
 import 'floating_music.dart';
 
 class MainWrapper extends StatefulWidget {
+
   final int initialPage; // New parameter to accept the initial page index
-  const MainWrapper({super.key, required this.initialPage}); // Constructor update
+  const MainWrapper({
+    super.key, 
+    required this.initialPage
+  }); // Constructor update
 
   @override
   State<MainWrapper> createState() => MainWrapperState();
+  
 }
 
 class MainWrapperState extends State<MainWrapper> with SingleTickerProviderStateMixin {
-  late PageController pageController;
+
   final GlobalKey<FloatingMusicState> _floatingMusicKey = GlobalKey<FloatingMusicState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  ValueNotifier<String> audioUrlNotifier = ValueNotifier<String>('');
+  late PageController pageController;
 
   // Store the top level pages
   late List<Widget> topLevelPages;
@@ -77,7 +84,7 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
           //   onTap: toggleContainer,
           //   child: FloatingMusic(key: _floatingMusicKey),
           // ),
-          FloatingMusic(key: _floatingMusicKey),
+          FloatingMusic(key: _floatingMusicKey, initialAudioUrl: '23',),
           _mainWrapperBottomNavBar(context), // Keep the bottom navigation bar below
         ],
       ),
