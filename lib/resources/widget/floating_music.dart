@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ontune/frontend/player.dart';
+import 'package:ontune/resources/schema.dart';
 import '../../frontend/home.dart';
 
 class FloatingMusic extends StatefulWidget {
@@ -200,7 +201,7 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 2, 149, 85),
+                    color: widgetPricolor,
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Padding(

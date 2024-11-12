@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
 import 'model/classification.dart';
@@ -9,7 +10,19 @@ class OnTuneRepository {
   final AudioPlayer _audioPlayer = AudioPlayer();
   
   Future<List<Randomized>> fetchExplore() async {
-    final response = await http.get(Uri.parse('$apiURL/fetch-randomized-playlist?url=https://music.youtube.com/playlist?list=OLAK5uy_kZtAgoEEsCWSMgLGw3DhuwZLThzfkI9Q0'));
+    
+    final String fileContent = await rootBundle.loadString('lib/resources/links/randomized.txt');
+
+    // Split the file content into lines (each line contains a URL)
+    final List<String> urlList = fileContent.split('\n').map((url) => url.trim()).toList();
+
+    // Encode the URLs
+    String encodedUrls = urlList.map((url) => Uri.encodeComponent(url)).join('&urls[]=');
+
+    // Send the GET request with the dynamic URLs
+    final response = await http.get(Uri.parse('$apiURL/fetch-randomized-playlist?urls[]=$encodedUrls'));
+
+
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       
@@ -23,7 +36,6 @@ class OnTuneRepository {
     } else {
       throw Exception("Failed to fetch data");
     }
-
   }
   
   Future<Classification?> initializeAudio(String youtubeUrl) async {

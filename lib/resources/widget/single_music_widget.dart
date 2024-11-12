@@ -36,8 +36,9 @@ class single_music_widget extends StatelessWidget {
       child: Container(
         width: 140,
         height: 185,
-        margin: EdgeInsets.only(left: 20),
+       
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
           shape: BoxShape.rectangle,
         ),
         child: Column(
@@ -48,9 +49,11 @@ class single_music_widget extends StatelessWidget {
               height: 140,
               decoration: BoxDecoration(
                 color: primary_color,
+                borderRadius: BorderRadius.circular(5),
                 shape: BoxShape.rectangle,
               ),
               child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
                 child: Image.network(
                   thumbnail,
                   fit: BoxFit.cover,

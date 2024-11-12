@@ -64,47 +64,71 @@ app.get('/get-audio', (req, res) => {
 
 });
 
-app.get('/fetch-randomized-playlist', (req, res) => {
+app.get('/fetch-randomized-playlist', async (req, res) => {
+    // Log received query parameters for debugging
+    console.log('Received query:', req.query);
 
-    const randomizedUrl = req.query.url;
-    // http://192.168.0.154:3000/fetch-randomized-playlist?url=KEY
-    console.log("Received URL:", randomizedUrl);
+    // Ensure `urls[]` is an array (query parameters are automatically parsed into an array if there are multiple values)
+    const randomizedUrls = req.query.urls;
 
-    if (!randomizedUrl) {
-        return res.status(400).json({ error: 'URL parameter is required' });
+    // If `urls[]` is not present or it's not an array, return an error
+    if (!randomizedUrls || !Array.isArray(randomizedUrls)) {
+        return res.status(400).json({ error: 'URLs parameter must be an array' });
     }
 
+    // Validate that each URL is in the correct format
     const urlPattern = /^(https?:\/\/)?(www\.)?(youtube|music\.youtube)\.com\/playlist\?list=/;
-    if (!urlPattern.test(randomizedUrl)) {
-        console.error("Invalid URL format:", randomizedUrl);
-        return res.status(400).json({ error: 'Invalid YouTube playlist URL format' });
+    for (const url of randomizedUrls) {
+        if (!urlPattern.test(url)) {
+            console.error("Invalid URL format:", url);
+            return res.status(400).json({ error: 'Invalid YouTube playlist URL format' });
+        }
     }
 
-    const pythonScript = path.resolve(__dirname, 'functions', 'ramdomized.py');
+    // Helper function to fetch playlist details using the Python script
+    const fetchPlaylistDetails = (playlistUrl) => {
+        return new Promise((resolve, reject) => {
+            const pythonScript = path.resolve(__dirname, 'functions', 'ramdomized.py');
+            execFile('python3', [pythonScript, playlistUrl], (error, stdout, stderr) => {  // Pass the playlist URL directly
+                if (error) {
+                    console.error('Error executing Python script:', stderr);
+                    reject('Error fetching playlist');
+                }
 
-    execFile('python3', [pythonScript, convertMusicUrlToYouTubeUrl(randomizedUrl)], (error, stdout, stderr) => {
-        if (error) {
-            console.error('Error executing Python script:', stderr);
-            return res.status(500).json({ error: 'Error fetching playlist count' });
+                try {
+                    const result = JSON.parse(stdout);
+                    if (result.error) {
+                        reject(result.error);
+                    } else {
+                        resolve(result.songInfo); // Return song info
+                    }
+                } catch (parseError) {
+                    reject('Error parsing response from Python script');
+                }
+            });
+        });
+    };
+
+    try {
+        // Fetch details for all playlists
+        const allSongs = [];
+        for (const url of randomizedUrls) {
+            const songs = await fetchPlaylistDetails(url);
+            allSongs.push(...songs); // Add all songs from this playlist
         }
 
-        try {
-            const result = JSON.parse(stdout);
-            console.log("Python Script Output:", result);
+        // Randomize the combined playlist
+        const shuffledSongs = allSongs.sort(() => Math.random() - 0.5);
 
-            if (result.error) {
-                console.error('Error in result:', result.error);
-                return res.status(500).json({ error: result.error });
-            }
-
-            res.json(result);
-
-        } catch (parseError) {
-            console.error('Error parsing JSON:', parseError);
-            return res.status(500).json({ error: 'Error parsing response from Python script' });
-        }
-    });
-
+        // Return the randomized list of songs
+        res.json({
+            songCount: shuffledSongs.length,
+            songInfo: shuffledSongs,
+        });
+    } catch (error) {
+        console.error('Error processing playlists:', error);
+        res.status(500).json({ error: 'Error fetching or processing playlists' });
+    }
 });
 
 // Start the server on port 3000

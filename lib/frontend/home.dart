@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ontune/frontend/search.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -144,7 +145,20 @@ class _HomeState extends State<Home> {
           if (state is LoadingTune) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchExplorer) {
+            
             final List<Randomized> songs = state.explorerList;
+            
+            // Shuffle the songs list
+            List<dynamic> shuffledSongs = List.from(songs); // Make a mutable copy
+            shuffledSongs.shuffle(); // Shuffle the list
+
+            // Calculate the split point based on the length of the shuffled list
+            int splitPoint = shuffledSongs.length ~/ 2; // Divide the list in half
+
+            // Split into popular and recommended songs
+            List<dynamic> popularSongs = shuffledSongs.take(splitPoint).toList(); // First half for "Popular Today"
+            List<dynamic> recommendedSongs = shuffledSongs.skip(splitPoint).toList(); // Second half for "Recommended For Today"
+  
             return Container(
               width: double.infinity,
               height: double.infinity,
@@ -188,7 +202,9 @@ class _HomeState extends State<Home> {
                       children: [
                         Text(
                           'Creativity',
-                          style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w500)
+                          style: GoogleFonts.notoSans(
+                            textStyle: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w900)
+                          )
                         ),
                         Text(
                           'Featuring our friendly and free music player for public users',
@@ -236,7 +252,9 @@ class _HomeState extends State<Home> {
                           Positioned(
                             child: Text(
                               'Popular Today',
-                              style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w500)
+                              style: GoogleFonts.notoSans(
+                                textStyle: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.w800)
+                              )
                             )
                           ),
                           Positioned(
@@ -257,21 +275,29 @@ class _HomeState extends State<Home> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: List.generate(
-                        songs.length,
-                        (index) {
-                          final song = songs[index];
-                          return single_music_widget(
-                            onToggle: widget.onToggle,
-                            musicTitle: song.musicTitle,
-                            musicWriter: song.musicWriter,
-                            audioUrl: song.audioUrl,
-                            thumbnail: song.thumnail,
-                            floatingMusicKey: floatingMusicKey
-                          );
-                        },
-                      ),
-                    ),
+                      children: [
+                        SizedBox(width: 20), 
+                        ...List.generate(
+                          popularSongs.length,
+                          (index) {
+                            final song = popularSongs[index];
+                            return Row(
+                              children: [
+                                single_music_widget(
+                                  onToggle: widget.onToggle,
+                                  musicTitle: song.musicTitle,
+                                  musicWriter: song.musicWriter,
+                                  audioUrl: song.audioUrl,
+                                  thumbnail: song.thumnail,
+                                  floatingMusicKey: floatingMusicKey,
+                                ),
+                                SizedBox(width: 10.0), // Horizontal gap after each widget
+                              ],
+                            );
+                          },
+                        ),
+                      ]
+                    )
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10, bottom: 20, left: 20),
@@ -282,7 +308,9 @@ class _HomeState extends State<Home> {
                           Positioned(
                             child: Text(
                               'Recommended For Today',
-                              style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w500)
+                              style: GoogleFonts.notoSans(
+                                textStyle: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.w800)
+                              )
                             )
                           ),
                           Positioned(
@@ -302,50 +330,30 @@ class _HomeState extends State<Home> {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Container(
-                      width: 140,
-                      height: 190,
-                      margin: EdgeInsets.only(left: 20),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 140,
-                            decoration: BoxDecoration(
-                              color: primary_color,
-                              shape: BoxShape.rectangle,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Happier Than Ever',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400
+                    child: Row(
+                      children: [
+                        SizedBox(width: 20), 
+                        ...List.generate(
+                          recommendedSongs.length,
+                          (index) {
+                            final song = recommendedSongs[index];
+                            return Row(
+                              children: [
+                                single_music_widget(
+                                  onToggle: widget.onToggle,
+                                  musicTitle: song.musicTitle,
+                                  musicWriter: song.musicWriter,
+                                  audioUrl: song.audioUrl,
+                                  thumbnail: song.thumnail,
+                                  floatingMusicKey: floatingMusicKey,
                                 ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Billie Elish', 
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w300
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                                SizedBox(width: 10.0), // Horizontal gap after each widget
+                              ],
+                            );
+                          },
+                        ),
+                      ]
+                    )
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10, bottom: 20, left: 20),
@@ -356,7 +364,9 @@ class _HomeState extends State<Home> {
                           Positioned(
                             child: Text(
                               'My Playlist',
-                              style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w500)
+                              style: GoogleFonts.notoSans(
+                                textStyle: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.w800)
+                              )
                             )
                           ),
                           Positioned(
@@ -449,7 +459,9 @@ class _HomeState extends State<Home> {
                                         ),
                                         Text(
                                         'Frank Sinatra',
-                                          style: TextStyle(color: Colors.white, fontSize: 17.0)
+                                         style: GoogleFonts.notoSans(
+                                            textStyle: TextStyle(color: Colors.white, fontSize: 17.0, fontWeight: FontWeight.w800)
+                                          )
                                         )
                                       ],
                                     )
@@ -477,50 +489,30 @@ class _HomeState extends State<Home> {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Container(
-                      width: 140,
-                      height: 190,
-                      margin: EdgeInsets.only(left: 20),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 140,
-                            decoration: BoxDecoration(
-                              color: primary_color,
-                              shape: BoxShape.rectangle,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _truncateText('Dizzy Gillespie, Duke Ellington, Mark Egan', 24),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400
+                    child: Row(
+                      children: [
+                        SizedBox(width: 20), 
+                        ...List.generate(
+                          songs.length,
+                          (index) {
+                            final song = songs[index];
+                            return Row(
+                              children: [
+                                single_music_widget(
+                                  onToggle: widget.onToggle,
+                                  musicTitle: song.musicTitle,
+                                  musicWriter: song.musicWriter,
+                                  audioUrl: song.audioUrl,
+                                  thumbnail: song.thumnail,
+                                  floatingMusicKey: floatingMusicKey,
                                 ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Jazz', 
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w300
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                                SizedBox(width: 10.0), // Horizontal gap after each widget
+                              ],
+                            );
+                          },
+                        ),
+                      ]
+                    )
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10, bottom: 20, left: 20),
@@ -551,50 +543,30 @@ class _HomeState extends State<Home> {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Container(
-                      width: 140,
-                      height: 190,
-                      margin: EdgeInsets.only(left: 20),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 140,
-                            decoration: BoxDecoration(
-                              color: primary_color,
-                              shape: BoxShape.rectangle,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Happier Than Ever',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400
+                    child: Row(
+                      children: [
+                        SizedBox(width: 20), 
+                        ...List.generate(
+                          songs.length,
+                          (index) {
+                            final song = songs[index];
+                            return Row(
+                              children: [
+                                single_music_widget(
+                                  onToggle: widget.onToggle,
+                                  musicTitle: song.musicTitle,
+                                  musicWriter: song.musicWriter,
+                                  audioUrl: song.audioUrl,
+                                  thumbnail: song.thumnail,
+                                  floatingMusicKey: floatingMusicKey,
                                 ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Billie Elish', 
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w300
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                                SizedBox(width: 10.0), // Horizontal gap after each widget
+                              ],
+                            );
+                          },
+                        ),
+                      ]
+                    )
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10, bottom: 10, left: 20),
