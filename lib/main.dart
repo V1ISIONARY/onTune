@@ -5,7 +5,7 @@ import 'package:ontune/backend/cubit/bnc_cubit.dart';
 import 'package:ontune/backend/bloc/on_tune_bloc.dart';
 import 'package:ontune/backend/services/repository.dart';
 
-import 'resources/widget/main_navigation.dart';
+import 'resources/pockets/main_navigation.dart';
 
 void main() {
   runApp(

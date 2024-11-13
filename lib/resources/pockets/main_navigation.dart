@@ -526,7 +526,7 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                         icon: Icons.library_music_outlined, // Use IconData for Library
                         svgIcon: '', // Optional SVG if preferred
                         page: 2,
-                        label: "My Library",
+                        label: "Music Box",
                       ),
                       _bottomAppBarItem(
                         context,

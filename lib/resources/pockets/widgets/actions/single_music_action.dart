@@ -1,10 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:ontune/resources/widget/floating_music.dart';
-import '../../frontend/home.dart';
-import '../schema.dart';
+import 'package:ontune/resources/pockets/floating_music.dart';
+import '../../../../frontend/home.dart';
+import '../../../schema.dart';
+import '../../designs/textLimit.dart';
 
-class single_music_widget extends StatelessWidget {
+class single_music_action extends StatelessWidget {
 
   final GlobalKey<FloatingMusicState> floatingMusicKey;
   final VoidCallback onToggle; 
@@ -13,7 +14,7 @@ class single_music_widget extends StatelessWidget {
   final String audioUrl;
   final String thumbnail;
 
-  const single_music_widget({
+  const single_music_action({
     super.key,
     required this.onToggle,
     required this.musicTitle,
@@ -65,7 +66,7 @@ class single_music_widget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  limitText(musicTitle, 20),
+                  limitText(musicTitle, 18),
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.white,
@@ -74,7 +75,7 @@ class single_music_widget extends StatelessWidget {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  limitText(musicWriter, 20), 
+                  limitText(musicWriter, 18), 
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.grey,
@@ -88,8 +89,4 @@ class single_music_widget extends StatelessWidget {
       ),
     );
   }
-}
-
-String limitText(String text, int maxLength) {
-  return text.length > maxLength ? '${text.substring(0, maxLength)}...' : text;
 }

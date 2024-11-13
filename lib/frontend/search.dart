@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ontune/resources/schema.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../resources/widget/main_navigation.dart';
+import '../resources/pockets/main_navigation.dart';
 
 class Search extends StatefulWidget {
   final bool enableReturn; 

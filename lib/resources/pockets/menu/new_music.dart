@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:ontune/resources/widget/main_navigation.dart';
+import 'package:ontune/resources/pockets/main_navigation.dart';
 import 'package:page_transition/page_transition.dart';
 
 class new_music extends StatefulWidget {
