@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ontune/frontend/search.dart';
+import 'package:ontune/resources/pockets/widgets/album_section.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../backend/bloc/on_tune_bloc.dart';
 import '../backend/services/model/randomized.dart';
 import '../resources/pockets/floating_music.dart';
 import '../resources/pockets/main_navigation.dart';
+import '../resources/pockets/widgets/artist_section.dart';
 import '../resources/pockets/widgets/category_selector.dart';
 import '../resources/pockets/widgets/community_seection.dart';
 import '../resources/pockets/widgets/creativity_section.dart';
@@ -164,10 +166,13 @@ class _HomeState extends State<Home> {
                 HorizontalBanner(),
                 MusicSection(title: 'Popular Today', songs: popularSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
                 MusicSection(title: 'Matched to your sound taste.', songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
+                ArtistSection(title: "Presenting our artists", listahan: songs),
                 MyPlaylist(),
                 MoreMusicLike(title: 'More Music like Frank Sinatra', songs: songs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
                 CommunitySection(songs: songs),
+                MusicSection(title: "Today's biggest hits", songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
                 NewReleasedSongs(songs: songs),
+                AlbumSection(title: 'Artist Album', songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
               ],
             );
             
@@ -179,7 +184,6 @@ class _HomeState extends State<Home> {
               ),
             );
           }
-
           return const SizedBox.shrink();
         }
       )

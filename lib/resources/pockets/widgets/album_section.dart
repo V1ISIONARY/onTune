@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ontune/resources/pockets/widgets/actions/artist_album.dart';
 import 'actions/single_music.dart';
 import '../floating_music.dart';
 
-class MusicSection extends StatelessWidget {
+class AlbumSection extends StatelessWidget {
   
   final String title;
   final List<dynamic> songs;
   final VoidCallback onToggle;
   final GlobalKey<FloatingMusicState> floatingMusicKey;
 
-  const MusicSection({
+  const AlbumSection({
     Key? key,
     required this.title,
     required this.songs,
@@ -61,13 +62,12 @@ class MusicSection extends StatelessWidget {
               final song = songs[index];
               return Padding(
                 padding: EdgeInsets.only(left: index == 0 ? 20 : 0, right: 10),
-                child: single_music_action(
-                  onToggle: onToggle,
-                  musicTitle: song.musicTitle,
-                  musicWriter: song.musicWriter,
-                  audioUrl: song.audioUrl,
-                  thumbnail: song.thumnail,
-                  floatingMusicKey: floatingMusicKey,
+                child: artist_album(
+                  albumArtist: song.musicWriter, 
+                  songsCount: "21 Songs", 
+                  albumTitle: song.musicTitle, 
+                  albumUrl: song.playlistUrl, 
+                  thumnail: song.thumnail
                 ),
               );
             },

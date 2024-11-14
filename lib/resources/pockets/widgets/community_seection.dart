@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../backend/services/model/randomized.dart';
-import 'actions/multiple_music_widget.dart';
+import 'actions/multiple_music.dart';
 
 class CommunitySection extends StatelessWidget {
   final List<Randomized> songs;

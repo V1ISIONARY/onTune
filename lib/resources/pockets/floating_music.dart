@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:ontune/frontend/player.dart';
+import 'package:ontune/resources/pockets/designs/fade.dart';
 import 'package:ontune/resources/schema.dart';
 import '../../frontend/home.dart';
 
@@ -68,61 +71,80 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
   }
 
   static Widget _buildPage(String thumbnail, String title, String artist) {
-    return Container(
-      color: Colors.transparent,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5),
-            child: Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.white,
-              ),
-              child: ClipRRect(
-                child: Image.network(
-                  thumbnail,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 10),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Stack(
+      children: [
+        Positioned(
+          bottom: 0,
+          right: 0,
+          left: 0,
+          child: Container(
+            width: double.infinity,
+            height: 2,
+            color: Colors.white,
+          )
+        ),
+        Container(
+          color: Colors.transparent,
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: Colors.white),
-              ),
-              SizedBox(height: 2),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 9,
-                      height: 9,
-                      decoration: BoxDecoration(color: Colors.white),
+              Center(
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.white,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Image.network(
+                      thumbnail,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(width: 5),
+                )
+              ),
+              SizedBox(width: 10),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    artist,
+                    limitText(title, 30),
                     textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.w400, color: Colors.white54),
+                    style: TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: Colors.white),
+                  ),
+                  SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center, // Centers horizontally
+                    crossAxisAlignment: CrossAxisAlignment.center, // Centers vertically
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 9,
+                          height: 9,
+                          decoration: BoxDecoration(color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        artist,
+                        textAlign: TextAlign.center, // Center align text if needed
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white54,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ]
     );
   }
 
@@ -204,49 +226,91 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
                     color: widgetPricolor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: Row(
+                  child: Container(
+                    width: double.infinity, // Ensures full width
+                    height: 300, // Set a fixed height for the container (adjust as needed)
+                    child: Stack(
                       children: [
-                        Expanded(
-                          child: PageView.builder(
-                            controller: _pageController,
-                            itemCount: _pages.length,
-                            itemBuilder: (context, index) => _pages[index],
-                            onPageChanged: (index) {
-                              setState(() {
-                                _currentIndex = index;
-                              });
-                            },
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  child: Image.network(
+                                    updatedIcon.value,
+                                    fit: BoxFit.cover, // Ensures the image covers the container
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(color: Colors.grey); // Default if image fails
+                                    },
+                                  ),
+                                ),
+                                // Frosted glass effect (blur) on the image only
+                                Positioned.fill(
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // Apply blur effect
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withOpacity(0.4), // Dark overlay for frosted glass effect
+                                        borderRadius: BorderRadius.circular(5), // Same border radius as image
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              iconSize: 20,
-                              icon: const Icon(Icons.connected_tv_sharp, color: Colors.white),
-                              onPressed: () {},
-                              padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: PageView.builder(
+                                    controller: _pageController,
+                                    itemCount: _pages.length,
+                                    itemBuilder: (context, index) => _pages[index],
+                                    onPageChanged: (index) {
+                                      setState(() {
+                                        _currentIndex = index;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      iconSize: 20,
+                                      icon: const Icon(Icons.connected_tv_sharp, color: Colors.white),
+                                      onPressed: () {},
+                                      padding: EdgeInsets.zero,
+                                      constraints: BoxConstraints(),
+                                    ),
+                                    SizedBox(width: 10),
+                                    IconButton(
+                                      iconSize: 20,
+                                      icon: const Icon(Icons.play_arrow, color: Colors.white),
+                                      onPressed: () {},
+                                      padding: EdgeInsets.zero,
+                                      constraints: BoxConstraints(),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 10),
-                            IconButton(
-                              iconSize: 20,
-                              icon: const Icon(Icons.play_arrow, color: Colors.white),
-                              onPressed: () {},
-                              padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                  )
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

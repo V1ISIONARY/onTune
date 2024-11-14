@@ -9,7 +9,7 @@ class Classification {
     required this.musicTitle,
     required this.musicWriter,
     required this.audioUrl,
-    required this.lyrics
+    required this.lyrics,
   });
 
   factory Classification.fromJson(Map<String, dynamic> json) {
@@ -17,7 +17,7 @@ class Classification {
       musicTitle: json['musicTitle'],
       musicWriter: json['musicWriter'],
       audioUrl: json['audioUrl'],
-      lyrics: json['lyrics']
+      lyrics: json['lyrics'],
     );
   }
 

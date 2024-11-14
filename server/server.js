@@ -68,20 +68,20 @@ app.get('/fetch-randomized-playlist', async (req, res) => {
     // Log received query parameters for debugging
     console.log('Received query:', req.query);
 
-    // Ensure `urls[]` is an array (query parameters are automatically parsed into an array if there are multiple values)
+    // Ensure urls[] is an array (query parameters are automatically parsed into an array if there are multiple values)
     const randomizedUrls = req.query.urls;
 
-    // If `urls[]` is not present or it's not an array, return an error
+    // If urls[] is not present or it's not an array, return an error
     if (!randomizedUrls || !Array.isArray(randomizedUrls)) {
         return res.status(400).json({ error: 'URLs parameter must be an array' });
     }
 
-    // Validate that each URL is in the correct format
-    const urlPattern = /^(https?:\/\/)?(www\.)?(youtube|music\.youtube)\.com\/playlist\?list=/;
+    // Update the URL pattern to accept both playlist and channel links
+    const urlPattern = /^(https?:\/\/)?(www\.)?(youtube|music\.youtube)\.com\/(playlist\?list=|channel\/)/;
     for (const url of randomizedUrls) {
         if (!urlPattern.test(url)) {
             console.error("Invalid URL format:", url);
-            return res.status(400).json({ error: 'Invalid YouTube playlist URL format' });
+            return res.status(400).json({ error: 'Invalid YouTube URL format. Accepts playlist or channel links only.' });
         }
     }
 

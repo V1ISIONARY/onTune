@@ -65,7 +65,7 @@ class OnTuneRepository {
             musicTitle: title,
             musicWriter: writer,
             audioUrl: audioUrl,
-            lyrics: lyrics,
+            lyrics: lyrics
           );
         } else {
           print('Error: audioUrl is null');
