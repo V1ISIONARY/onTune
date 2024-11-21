@@ -173,7 +173,7 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                           ),
                         ),
                         CustomPaint(
-                          painter: WhiteBackgroundPainter(),
+                          painter: WhiteBackgroundPainter(height: 0.6),
                           child: Container(),
                         ),
                         AppBar(

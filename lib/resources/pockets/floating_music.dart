@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:ontune/frontend/player.dart';
-import 'package:ontune/resources/pockets/designs/fade.dart';
 import 'package:ontune/resources/schema.dart';
 import '../../frontend/home.dart';
 

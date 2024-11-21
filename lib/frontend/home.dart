@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ontune/frontend/search.dart';
 import 'package:ontune/resources/pockets/widgets/album_section.dart';
 import 'package:page_transition/page_transition.dart';

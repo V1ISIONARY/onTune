@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:ontune/resources/pockets/floating_music.dart';
-import '../../../../frontend/home.dart';
 import '../../../schema.dart';
 import '../../designs/textLimit.dart';
 
@@ -28,7 +26,7 @@ class artist_album extends StatelessWidget {
       onTap: () {
       },
       child: Container(
-        width: 180,
+        width: 190,
         height: 185,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
@@ -38,7 +36,7 @@ class artist_album extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 180,
+              width: 190,
               height: 140,
               child: Stack(
                 children:[
@@ -52,8 +50,8 @@ class artist_album extends StatelessWidget {
                         bottomLeft: Radius.circular(5)
                       ),
                       child: Image.network(
-                        "",
-                        fit: BoxFit.cover,
+                        "https://static.vecteezy.com/system/resources/previews/009/393/830/original/black-vinyl-disc-record-for-music-album-cover-design-free-png.png",
+                        fit: BoxFit.fitHeight,
                       ),
                     ),
                   ),

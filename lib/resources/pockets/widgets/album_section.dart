@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ontune/resources/pockets/widgets/actions/artist_album.dart';
-import 'actions/single_music.dart';
 import '../floating_music.dart';
 
 class AlbumSection extends StatelessWidget {
