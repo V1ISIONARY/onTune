@@ -6,6 +6,7 @@ import '../floating_music.dart';
 class MusicSection extends StatelessWidget {
   
   final String title;
+  final String subtitle;
   final List<dynamic> songs;
   final VoidCallback onToggle;
   final GlobalKey<FloatingMusicState> floatingMusicKey;
@@ -13,6 +14,7 @@ class MusicSection extends StatelessWidget {
   const MusicSection({
     Key? key,
     required this.title,
+    required this.subtitle,
     required this.songs,
     required this.onToggle,
     required this.floatingMusicKey,
@@ -30,17 +32,32 @@ class MusicSection extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned(
-                  child: Text(
-                    title,
-                    style: GoogleFonts.notoSans(
-                      textStyle: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.w800)
-                    )
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: GoogleFonts.notoSans(
+                          textStyle: TextStyle(color: Colors.white, fontSize: 12.0, fontWeight: FontWeight.w800)
+                        )
+                      ),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.notoSans(
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8.0,
+                            fontWeight: FontWeight.w400,
+                            decoration: TextDecoration.underline,
+                          ),
+                        )
+                      )
+                    ]
                   )
                 ),
                 Positioned(
                   right: 20,
-                  top: 2,
-                  bottom: 2,
+                  bottom: 0,
                   child: InkWell(
                     onTap: () {},
                     child: Text('View all >',

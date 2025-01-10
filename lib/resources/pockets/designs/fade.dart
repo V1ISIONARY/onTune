@@ -4,14 +4,24 @@ import 'package:flutter/material.dart';
 class WhiteBackgroundPainter extends CustomPainter {
 
   final double height; 
-  WhiteBackgroundPainter({required this.height});
+  final Alignment begin;
+  final Alignment end;
+
+  WhiteBackgroundPainter({
+    required this.height,
+    required this.begin,
+    required this.end
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
       ..shader = LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+        begin: begin,
+        end: end,
+        //default
+        // begin: Alignment.topLeft,
+        // end: Alignment.bottomRight,
         colors: [
           Color.fromARGB(0, 0, 0, 0),
           Color.fromARGB(170, 24, 24, 24),

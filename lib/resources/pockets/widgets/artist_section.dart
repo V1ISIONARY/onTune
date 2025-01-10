@@ -5,12 +5,15 @@ import 'package:ontune/resources/pockets/widgets/actions/artist.dart';
 import '../../../backend/services/model/randomized.dart';
 
 class ArtistSection extends StatelessWidget {
+
   final String title;
+  final String subtitle;
   final List<Randomized> listahan;
 
   const ArtistSection({
     Key? key,
     required this.title,
+    required this.subtitle,
     required this.listahan,
   }) : super(key: key);
 
@@ -44,38 +47,65 @@ class ArtistSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 20),
-          child: Center(
-            child: Text(
-              title,
-              style: GoogleFonts.notoSans(
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w800,
-                  decoration: TextDecoration.underline,
+          padding: const EdgeInsets.only(top: 20, bottom: 20, left: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.notoSans(
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w800,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
-            ),
+              Text(
+                subtitle,
+                style: GoogleFonts.notoSans(
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 8.0,
+                    fontWeight: FontWeight.w400,
+                    decoration: TextDecoration.underline,
+                  ),
+                )
+              )
+            ]
           ),
         ),
         SizedBox(
-          height: 180,
-          child: ListView.builder(
+          height: 130, // Keep the grid height fixed
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            itemCount: uniqueRepeatedArtists.length,
-            itemBuilder: (context, index) {
-              final artist = uniqueRepeatedArtists[index];
-              return Padding(
-                padding: EdgeInsets.only(left: index == 0 ? 20 : 0, right: 10),
-                child: Artist(
-                  artistName: artist.musicWriter,
-                  artistUrl: artist.playlistUrl,
-                  followers: artist.subscribers,
-                  writerLogo: artist.thumnail,
-                ),
-              );
-            },
+            child: Row(
+              children: List.generate(
+                (uniqueRepeatedArtists.length / 2).ceil(),
+                (columnIndex) {
+                  final startIndex = columnIndex * 2;
+                  final endIndex = startIndex + 2;
+                  final artistsInColumn = uniqueRepeatedArtists.sublist(
+                    startIndex,
+                    endIndex > uniqueRepeatedArtists.length ? uniqueRepeatedArtists.length : endIndex,
+                  );
+                  return Column(
+                    children: artistsInColumn.map((artist) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        child: Artist(
+                          artistName: artist.musicWriter,
+                          artistUrl: artist.playlistUrl,
+                          followers: artist.subscribers,
+                          writerLogo: artist.thumnail,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+            ),
           ),
         ),
       ],

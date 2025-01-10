@@ -41,7 +41,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    context.read<OnTuneBloc>().add(LoadTune());
+    
   }
   
   @override
@@ -51,6 +51,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         automaticallyImplyLeading: false,
+        centerTitle: false,
         title: Container(
           width: double.infinity,
           child: Builder(builder: (context) {
@@ -60,7 +61,7 @@ class _HomeState extends State<Home> {
                 Container(
                   height: 50,
                   child: Center(
-                    child: InkWell(
+                    child: GestureDetector(
                       onTap: widget.Drawable,
                       child: Container(
                         height: 25,
@@ -68,6 +69,12 @@ class _HomeState extends State<Home> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'lib/resources/images/static-profile.jpeg',  // Use Image.asset for local images
+                            fit: BoxFit.cover,  // Make sure the image covers the container
+                          ),
                         ),
                       ),
                     ),
@@ -147,6 +154,7 @@ class _HomeState extends State<Home> {
         },
         builder: (context, state) {
           if (state is LoadingTune) {
+            context.read<OnTuneBloc>().add(LoadTune());
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchExplorer) {
             
@@ -161,15 +169,14 @@ class _HomeState extends State<Home> {
               children: [
                 CategorySelector(),
                 CreativitySection(),
-                SizedBox(height: 10),
                 HorizontalBanner(),
-                MusicSection(title: 'Popular Today', songs: popularSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
-                MusicSection(title: 'Matched to your sound taste.', songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
-                ArtistSection(title: "Presenting our artists", listahan: songs),
+                MusicSection(title: 'Popular Today', subtitle: "Today's hits you can't miss", songs: popularSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
+                MusicSection(title: 'Matched to your sound taste.', subtitle: "Today's hits you can't miss", songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
+                ArtistSection(title: "Presenting our artists", subtitle: 'Similar to what you listen', listahan: songs),
                 MyPlaylist(),
                 MoreMusicLike(title: 'More Music like Frank Sinatra', songs: songs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
                 CommunitySection(songs: songs),
-                MusicSection(title: "Today's biggest hits", songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
+                MusicSection(title: "Today's biggest hits", subtitle: "Today's hits you can't miss", songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
                 NewReleasedSongs(songs: songs),
                 AlbumSection(title: 'Artist Album', songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
               ],

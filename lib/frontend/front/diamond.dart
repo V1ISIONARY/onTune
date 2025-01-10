@@ -27,7 +27,7 @@ class diamond extends StatelessWidget {
         child: Stack(
           children: [
             CustomPaint(
-              painter: WhiteBackgroundPainter(height: 0.5),
+              painter: WhiteBackgroundPainter(height: 0.5, begin: Alignment.topLeft, end: Alignment.bottomRight),
               child: Container(),
             ),
             Positioned(

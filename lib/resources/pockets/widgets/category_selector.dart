@@ -2,41 +2,67 @@ import 'package:flutter/material.dart';
 
 import '../../schema.dart';
 
-class CategorySelector extends StatelessWidget {
+class CategorySelector extends StatefulWidget {
   const CategorySelector({Key? key}) : super(key: key);
+
+  @override
+  _CategorySelectorState createState() => _CategorySelectorState();
+}
+
+class _CategorySelectorState extends State<CategorySelector> {
+  // Track the selected category, default is 'All'
+  String _selectedCategory = 'All';  // Set the default selected category
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 30,
+      height: 30,  // Adjusted height for better visibility
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Container(
-          margin: EdgeInsets.only(left: 20),
-          child: InkWell(
-            onTap: () {},
-            child: Container(
-              width: 100,
-              height: 30,
-              decoration: BoxDecoration(
-                color: primary_color,
-                borderRadius: BorderRadius.circular(2)
-              ),
-              child: Center(
-                child: Text(
-                  'Music',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400
-                  ),
-                )
-              )
-            )
-          )
-        )
-      ) 
+        child: Row(  // Changed to Row to display items horizontally
+          children: [
+            const SizedBox(width: 20),
+            _buildCategoryItem('All'),
+            _buildCategoryItem('Music'),
+            _buildCategoryItem('Pod Cast'),
+            _buildCategoryItem('Radio'),
+            _buildCategoryItem('Local'),
+            const SizedBox(width: 10)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryItem(String label) {
+
+    bool isSelected = _selectedCategory == label; // Check if this category is selected
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCategory = label; // Update the selected category
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 10), // Added margin between items
+        padding: const EdgeInsets.symmetric(horizontal: 20), // Added padding to make it wider
+        decoration: BoxDecoration(
+          color: isSelected ? const Color.fromARGB(255, 180, 4, 4) : primary_color, // Highlight selected category
+          borderRadius: BorderRadius.circular(50), // Oval shape
+        ),
+        height: 30, // Specify height directly here
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.white70, // Change text color for selected
+              fontSize: 11, // Font size for better readability
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

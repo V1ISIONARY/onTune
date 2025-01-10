@@ -14,7 +14,7 @@ class CreativitySection extends StatelessWidget {
           Text(
             'Creativity',
             style: GoogleFonts.notoSans(
-              textStyle: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.w900)
+              textStyle: TextStyle(color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.w900)
             )
           ),
           Text(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../frontend/player.dart';
+
 class Artist extends StatelessWidget {
   final String artistName;
   final String artistUrl;
@@ -16,23 +18,23 @@ class Artist extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         print(artistUrl);
         print(followers);
         print(writerLogo);
       },
-      child: Column(
+      child: Row(
         children: [
           Container(
-            width: 130,
-            height: 130,
+            width: 50,
+            height: 50,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.grey, // Placeholder color
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(65),
+              borderRadius: BorderRadius.circular(50),
               child: Image.network(
                 writerLogo,
                 fit: BoxFit.cover,
@@ -59,29 +61,29 @@ class Artist extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(width: 15),
           SizedBox(
-            width: 130,
+            width: 80,
             height: 30,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  limitText(artistName, 18),
+                  limitText(followers, 18),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+                Text(
+                  limitText(artistName, 11),
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.white,
                     fontWeight: FontWeight.w400,
                   ),
-                ),
-                Text(
-                  limitText(followers, 18),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
+                )
               ],
             ),
           ),
@@ -90,8 +92,4 @@ class Artist extends StatelessWidget {
     );
   }
 
-  String limitText(String text, int maxLength) {
-    if (text.length <= maxLength) return text;
-    return '${text.substring(0, maxLength)}...';
-  }
 }

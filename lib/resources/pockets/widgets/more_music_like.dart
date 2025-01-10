@@ -96,7 +96,7 @@ class MoreMusicLike extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'More Music like',
+                                'More Music of',
                                 style: TextStyle(color: Colors.white, fontSize: 10.0)
                               ),
                               Text(

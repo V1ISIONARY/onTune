@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ontune/frontend/credentials/menu/profile.dart';
+import 'package:ontune/frontend/front/listening.dart';
 import 'package:ontune/frontend/home.dart';
 import 'package:ontune/frontend/library.dart';
 import 'package:ontune/frontend/search.dart';
@@ -7,7 +9,9 @@ import 'package:ontune/resources/schema.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Add this for SvgPicture
 import '../../backend/cubit/bnc_cubit.dart';
-import 'menu/new_music.dart';
+import '../../frontend/credentials/menu/new_music.dart';
+import '../../frontend/musicbox.dart';
+import '../../frontend/notification.dart';
 import 'floating_music.dart';
 
 class MainWrapper extends StatefulWidget {
@@ -74,7 +78,9 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
     return [
       Home(onToggle: toggleContainer, Drawable: drawerOpen), // Pass toggleContainer to Home
       Search(enableReturn: true),
+      Musicbox(),
       Library(),
+      Notif()
     ];
   }
 
@@ -125,42 +131,60 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
         ),
         child: ListView(
           children: [
-            Container(
-              height: 60,
+            InkWell(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: profile(accId: '1', onToggle: () {  },),
+                    type: PageTransitionType.rightToLeft,
+                    duration: Duration(milliseconds: 200)
+                  )
+                );
+              },
               child: Container(
-                margin: EdgeInsets.all(10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle
+                height: 60,
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'lib/resources/images/static-profile.jpeg',  // Use Image.asset for local images
+                            fit: BoxFit.cover,  // Make sure the image covers the container
+                          ),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      height: 40,
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                            'Frank Sinatra',
-                              style: TextStyle(color: Colors.white, fontSize: 14.0)
-                            ),
-                            Text(
-                            'View Profile',
-                              style: TextStyle(color: Colors.white54, fontSize: 10.0)
-                            )
-                          ],
+                      SizedBox(width: 10),
+                      Container(
+                        height: 40,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                              'Frank Sinatra',
+                                style: TextStyle(color: Colors.white, fontSize: 14.0)
+                              ),
+                              Text(
+                              'View Profile',
+                                style: TextStyle(color: Colors.white54, fontSize: 10.0)
+                              )
+                            ],
+                          )
                         )
                       )
-                    )
-                  ],
+                    ],
+                  )
                 )
               )
             ),
@@ -175,7 +199,16 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ElevatedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          child: Listening(),
+                          type: PageTransitionType.leftToRight,
+                          duration: Duration(milliseconds: 200)
+                        )
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primary_color,
                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Button padding
@@ -523,7 +556,7 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                       ),
                       _bottomAppBarItem(
                         context,
-                        icon: Icons.library_music_outlined, // Use IconData for Library
+                        icon: Icons.linear_scale_outlined, // Use IconData for Library
                         svgIcon: '', // Optional SVG if preferred
                         page: 2,
                         label: "Music Box",
@@ -532,15 +565,15 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                         context,
                         icon: Icons.library_music_outlined, // Use IconData for Library
                         svgIcon: '', // Optional SVG if preferred
-                        page: 2,
+                        page: 3,
                         label: "My Library",
                       ),
                       _bottomAppBarItem(
                         context,
-                        icon: Icons.library_music_outlined, // Use IconData for Library
+                        icon: Icons.notifications_on, // Use IconData for Library
                         svgIcon: '', // Optional SVG if preferred
-                        page: 2,
-                        label: "My Library",
+                        page: 4,
+                        label: "Notification",
                       ),
                     ],
                   ),

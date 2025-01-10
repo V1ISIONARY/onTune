@@ -6,4 +6,5 @@ class bnc extends Cubit<int> {
   void changeSelectedIndex(int index) {
     emit(index); // Update the state with the new index
   }
+  
 }

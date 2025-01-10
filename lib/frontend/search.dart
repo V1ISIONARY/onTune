@@ -19,10 +19,16 @@ class Search extends StatefulWidget {
   State<Search> createState() => _SearchState();
 }
 
-class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
+class _SearchState extends State<Search> with TickerProviderStateMixin {
+  
   late AnimationController _controller;
-  late Animation<double> _animation;
+  late Animation<Offset> _hintAnimation;
+  late Animation<Color?> _hintColorAnimation;  // Added color animation
   late FocusNode _focusNode;
+
+  late AnimationController _controllerFade;
+  late Animation<Color?> _colorAnimation; // Animation for text color
+  bool _isFadedOut = false; // Track whether the text is faded out or not
 
   final List<String> hints = [
     'Cotton Candy - Arthur Nery',
@@ -37,12 +43,32 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
 
-    _animation = Tween<double>(begin: 1.0, end: 0.0).animate(_controller);
+    _controllerFade = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    
+    _hintAnimation = Tween<Offset>(
+      begin: Offset(0, 0), // Start position
+      end: Offset(0, -1), // Slide up position
+    ).animate(_controller);
+
+    _hintColorAnimation = ColorTween(
+      begin: Colors.white.withOpacity(0.5) , // Start with transparent
+      end: const Color.fromARGB(0, 148, 37, 37), // End with the desired color and opacity
+    ).animate(_controller);
+
+    _colorAnimation = ColorTween(
+      begin: Colors.white70, // Start with white color
+      end: Colors.transparent, // Fade to transparent
+    ).animate(_controllerFade);
+
     _focusNode = FocusNode();
 
     // Start hint text change every 2 seconds
@@ -52,11 +78,26 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         // Hide hint text when focused
+        _controllerFade.forward();
         _controller.forward();
       } else {
         // Show hint text when not focused
         _controller.reverse();
+        _controllerFade.reverse();
       }
+    });
+  }
+
+  // Function to toggle the text color fade on click
+  void _toggleTextVisibility() {
+    if (_isFadedOut) {
+      _controllerFade.reverse(); // Fade in the text
+    } else {
+      _controllerFade.forward(); // Fade out the text
+    }
+
+    setState(() {
+      _isFadedOut = !_isFadedOut; // Toggle the fade state
     });
   }
 
@@ -79,8 +120,9 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    _controller.dispose(); // Dispose of the controller
-    _focusNode.dispose(); // Dispose of the focus node
+    _controller.dispose(); 
+    _controllerFade.dispose();
+    _focusNode.dispose(); 
     super.dispose();
   }
 
@@ -91,6 +133,7 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
       appBar: AppBar(
         backgroundColor: Colors.black,
         automaticallyImplyLeading: false,
+        centerTitle: false,
         title: Container(
           width: double.infinity,
           child: Row(
@@ -100,7 +143,7 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
                 Container(
                   height: 50,
                   child: Center(
-                    child: InkWell(
+                    child: GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
@@ -135,7 +178,9 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
                       child: Stack(
                         children: [
                           // TextField for input
-                          TextField(
+                          // TextField for input
+                        Positioned.fill(
+                          child: TextField(
                             focusNode: _focusNode,
                             style: TextStyle(
                               color: Colors.white,
@@ -163,28 +208,58 @@ class _SearchState extends State<Search> with SingleTickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          // Hint text sliding up
-                          SlideTransition(
-                            position: Tween<Offset>(
-                              begin: Offset(0, 0), // Start position
-                              end: Offset(0, -1), // Slide up position
-                            ).animate(_controller),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 10, top: 6), // Padding to align with TextField
-                              child: InkWell(
+                        ),
+                        // Hint text sliding up inside the TextField's border
+                        Positioned(
+                          top: 6,
+                          left: 12, // Padding for hint text alignment
+                          right: 12,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
                                 onTap: (){
-                                  focusNode: _focusNode;
-                                },
-                                child: Text(
-                                  hints[_currentHintIndex],
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.3), // Adjust color for visibility
-                                    fontSize: 13,
+                                  FocusScope.of(context).requestFocus(_focusNode);
+                                }, // Handle the click
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: AnimatedBuilder(
+                                    animation: _controllerFade, // Listen to the animation controller
+                                    builder: (context, child) {
+                                      return Text(
+                                        "Search for",
+                                        style: TextStyle(
+                                          color: _colorAnimation.value, // Change color during animation
+                                          fontSize: 13,
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
+                              ),
+                              SlideTransition(
+                                position: _hintAnimation,
+                                child: AnimatedBuilder(
+                                  animation: _hintColorAnimation,
+                                  builder: (context, child) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        FocusScope.of(context).requestFocus(_focusNode);
+                                      },
+                                      child: Text(
+                                        hints[_currentHintIndex],
+                                        style: TextStyle(
+                                          color: _hintColorAnimation.value, // Color changes during animation
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               )
-                            ),
+                            ],
                           ),
+                        ),
                         ],
                       ),
                     ),
