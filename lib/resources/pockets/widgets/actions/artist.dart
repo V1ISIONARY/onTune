@@ -64,7 +64,7 @@ class Artist extends StatelessWidget {
           const SizedBox(width: 15),
           SizedBox(
             width: 80,
-            height: 30,
+            height: 40,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

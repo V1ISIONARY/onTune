@@ -116,7 +116,7 @@ class MoreMusicLike extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             SizedBox(
-              height: 180,
+              height: 185,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: filteredSongs.length,

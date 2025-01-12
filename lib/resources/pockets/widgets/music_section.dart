@@ -70,7 +70,7 @@ class MusicSection extends StatelessWidget {
           )
         ),
         Container(
-          height: 180,
+          height: 185,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: songs.length,

@@ -37,7 +37,6 @@ class single_music_action extends StatelessWidget {
       child: Container(
         width: 140,
         height: 185,
-       
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
           shape: BoxShape.rectangle,

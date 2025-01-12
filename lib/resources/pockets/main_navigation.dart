@@ -204,8 +204,8 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                         context,
                         PageTransition(
                           child: Listening(),
-                          type: PageTransitionType.leftToRight,
-                          duration: Duration(milliseconds: 200)
+                          type: PageTransitionType.fade,
+                          duration: Duration(milliseconds: 300)
                         )
                       );
                     },

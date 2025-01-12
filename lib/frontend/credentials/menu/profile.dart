@@ -45,7 +45,7 @@ class _profileState extends State<profile> {
           children: [
             Align(
               alignment: Alignment.centerLeft,
-              child: InkWell(
+              child: GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
@@ -80,7 +80,7 @@ class _profileState extends State<profile> {
         children: [
           Container(
             width: double.infinity,
-            height: 300,
+            height: 270,
             color: Colors.black, 
             child: Center(
               child: Column(
@@ -97,7 +97,7 @@ class _profileState extends State<profile> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(50),
                       child: Image.network(
-                        "writerLogo",
+                        'lib/resources/images/static-profile.jpeg',
                         fit: BoxFit.cover,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
@@ -134,7 +134,7 @@ class _profileState extends State<profile> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
+                    padding: EdgeInsets.only(top: 10),
                     child: Text(
                       "2k Followers | 377 Follows | 1024 Likes",
                       style: TextStyle(
@@ -148,151 +148,86 @@ class _profileState extends State<profile> {
               ),
             )
           ),
-          // Padding(
-          //   padding: EdgeInsets.only(top: 20, bottom: 20, left: 20),
-          //   child: Container(
-          //     width: double.infinity,
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         Text(
-          //           "History",
-          //           style: GoogleFonts.notoSans(
-          //           textStyle: TextStyle(
-          //             color: Colors.white,
-          //               fontSize: 20.0,
-          //               fontWeight: FontWeight.w900,
-          //             ),
-          //           ),
-          //         ),
-          //         SizedBox(height: 20),
-          //         InkWell(
-          //           onTap: () {
-          //           },
-          //           child: Container(
-          //             width: 140,
-          //             height: 185,
-          //             decoration: BoxDecoration(
-          //               borderRadius: BorderRadius.circular(5),
-          //               shape: BoxShape.rectangle,
-          //             ),
-          //             child: Column(
-          //               crossAxisAlignment: CrossAxisAlignment.start,
-          //               children: [
-          //                 Container(
-          //                   width: double.infinity,
-          //                   height: 140,
-          //                   decoration: BoxDecoration(
-          //                     color: primary_color,
-          //                     borderRadius: BorderRadius.circular(5),
-          //                     shape: BoxShape.rectangle,
-          //                   ),
-          //                   child: ClipRRect(
-          //                     borderRadius: BorderRadius.circular(5),
-          //                     child: Image.network(
-          //                       "thumbnail",
-          //                       fit: BoxFit.cover,
-          //                     ),
-          //                   ),
-          //                 ),
-          //                 SizedBox(height: 20),
-          //                 Column(
-          //                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                   children: [
-          //                     Text(
-          //                       limitText("musicTitle", 18),
-          //                       style: TextStyle(
-          //                         fontSize: 12,
-          //                         color: Colors.white,
-          //                         fontWeight: FontWeight.w400
-          //                       ),
-          //                     ),
-          //                     SizedBox(height: 2),
-          //                     Text(
-          //                       limitText("musicWriter", 18), 
-          //                       style: TextStyle(
-          //                         fontSize: 10,
-          //                         color: Colors.grey,
-          //                         fontWeight: FontWeight.w300
-          //                       ),
-          //                     )
-          //                   ],
-          //                 )
-          //               ],
-          //             ),
-          //           ),
-          //         )
-          //       ]
-          //     )
-          //   )
-          // ),
-          // Container(
-          //   margin: EdgeInsets.symmetric(horizontal: 20),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text(
-          //         "Playlist",
-          //         style: GoogleFonts.notoSans(
-          //           textStyle: TextStyle(
-          //             color: Colors.white,
-          //             fontSize: 20.0,
-          //             fontWeight: FontWeight.w900,
-          //           ),
-          //         ),
-          //       ),
-          //       SizedBox(height: 20),
-          //       ListView.builder(
-          //         shrinkWrap: true,
-          //         physics: NeverScrollableScrollPhysics(),
-          //         itemCount: 2,
-          //         itemBuilder: (context, index) {
-          //           return InkWell(
-          //             onTap: () {},
-          //             child: Container(
-          //               height: 40,
-          //               width: double.infinity,
-          //               margin: EdgeInsets.only(top: 10, bottom: 10),
-          //               child: Row(
-          //                 children: [
-          //                   Container(
-          //                     height: 40,
-          //                     width: 40,
-          //                     decoration: BoxDecoration(
-          //                       color: Colors.white,
-          //                       borderRadius: BorderRadius.circular(2),
-          //                     ),
-          //                   ),
-          //                   SizedBox(width: 10),
-          //                   Expanded(
-          //                     child: Column(
-          //                       mainAxisAlignment: MainAxisAlignment.center,
-          //                       crossAxisAlignment: CrossAxisAlignment.start,
-          //                       children: [
-          //                         Text(
-          //                           'APT',
-          //                           style: TextStyle(color: Colors.white, fontSize: 13.0),
-          //                         ),
-          //                         Text(
-          //                           'ROSE, Bruno Mars',
-          //                           style: TextStyle(color: Colors.white54, fontSize: 8.0),
-          //                         ),
-          //                       ],
-          //                     ),
-          //                   ),
-          //                   Text(
-          //                     '2:00',
-          //                     style: TextStyle(color: Colors.white54, fontSize: 10.0),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ),
-          //           );
-          //         },
-          //       ),
-          //     ],
-          //   ),
-          // )
+          Container(
+            width: double.infinity,
+            height: 40,
+            margin: EdgeInsets.symmetric(horizontal: 15),
+            child:  Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      GestureDetector(
+                        onTap: (){},
+                        child: Container(
+                          width: 60,
+                          child: Icon(
+                            Icons.library_music_outlined,
+                            color: Colors.white70,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){},
+                        child: Container(
+                          width: 60,
+                          child: Icon(
+                            Icons.lock_outlined,
+                            color: Colors.white30,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){},
+                        child: Container(
+                          width: 60,
+                          child: Icon(
+                            Icons.bookmark_outline,
+                            color: Colors.white30,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){},
+                        child: Container(
+                          width: 60,
+                          child: Icon(
+                            Icons.access_time,
+                            color: Colors.white30,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: (){},
+                        child: Container(
+                          width: 60,
+                          child: Icon(
+                            Icons.heart_broken_outlined,
+                            color: Colors.white30,
+                            size: 25,
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                )
+              ]
+            )
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 5, bottom: 15),
+            child: Container(
+              color: Colors.white10,
+              width: double.infinity,
+              height: 1, // Height of the line
+            ),
+          ),
         ]
       )
     );

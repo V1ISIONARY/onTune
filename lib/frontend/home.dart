@@ -20,6 +20,7 @@ import '../resources/pockets/widgets/new_released_songs.dart';
 import '../resources/schema.dart';
 
 class Home extends StatefulWidget {
+
   final VoidCallback onToggle;
   final VoidCallback Drawable;
 
@@ -32,16 +33,17 @@ class Home extends StatefulWidget {
 
   @override
   State<Home> createState() => _HomeState();
+
 }
 
 class _HomeState extends State<Home> {
+
   final GlobalKey<MainWrapperState> drawerOpen = GlobalKey<MainWrapperState>();
   final GlobalKey<FloatingMusicState> floatingMusicKey = GlobalKey<FloatingMusicState>();
 
   @override
   void initState() {
     super.initState();
-    
   }
   
   @override
@@ -94,7 +96,7 @@ class _HomeState extends State<Home> {
                               PageTransition(
                                 child: Search(enableReturn: false),
                                 type: PageTransitionType.fade,
-                                duration: Duration(milliseconds: 200)
+                                duration: Duration(milliseconds: 300)
                               )
                             );
                           }, 
@@ -108,31 +110,34 @@ class _HomeState extends State<Home> {
                           child: Container(
                             width: double.infinity,
                             child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    child: Center(
-                                      child: Icon(
-                                        size: 17,
-                                        Icons.search,
-                                        color: Colors.white54,
-                                      ),
-                                    )
-                                  ),
-                                  SizedBox(width: 5),
-                                  Container(
-                                    height: 40,
-                                    child: Center(
-                                      child: Text(
-                                        'Search songs',
-                                        style: TextStyle(color: Colors.white54, fontSize: 12.0, fontWeight: FontWeight.w500)
+                              child: Transform.translate(
+                                offset: Offset(-5, 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 40,
+                                      child: Center(
+                                        child: Icon(
+                                          size: 17,
+                                          Icons.search,
+                                          color: Colors.white54,
+                                        ),
+                                      )
+                                    ),
+                                    SizedBox(width: 5),
+                                    Container(
+                                      height: 40,
+                                      child: Center(
+                                        child: Text(
+                                          'Search songs',
+                                          style: TextStyle(color: Colors.white54, fontSize: 12.0, fontWeight: FontWeight.w400)
+                                        )
                                       )
                                     )
-                                  )
-                                ],
+                                  ],
+                                )
                               )
                             )
                           )

@@ -2,10 +2,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ontune/resources/schema.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../backend/bloc/on_tune_bloc.dart';
+import '../backend/services/model/randomized.dart';
 import '../resources/pockets/main_navigation.dart';
+import '../resources/pockets/widgets/long_single.dart';
+import '../resources/pockets/widgets/search_section.dart';
 
 class Search extends StatefulWidget {
   final bool enableReturn; 
@@ -23,12 +29,18 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
   
   late AnimationController _controller;
   late Animation<Offset> _hintAnimation;
-  late Animation<Color?> _hintColorAnimation;  // Added color animation
+  late Animation<Color?> _hintColorAnimation;
   late FocusNode _focusNode;
-
   late AnimationController _controllerFade;
-  late Animation<Color?> _colorAnimation; // Animation for text color
-  bool _isFadedOut = false; // Track whether the text is faded out or not
+  late Animation<Color?> _colorAnimation;
+  late TextEditingController _textEditingController;
+  bool _isFadedOut = false;
+
+  late AnimationController _controllerArtist; // Animation for container movement
+  late Animation<double> _positionAnimation1;
+  late Animation<double> _positionAnimation2;
+  double position1 = 300; // Initial position for the first container (right side)
+  double position2 = 300; // Initial position for the second container (right side)
 
   final List<String> hints = [
     'Cotton Candy - Arthur Nery',
@@ -44,6 +56,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
+    // Initialize controllers
     _controller = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -53,15 +66,34 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    
+
+    // Initialize the animation controller
+    _controllerArtist = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+
+    // Define the animations for both containers
+    _positionAnimation1 = Tween<double>(begin: 400, end: -200).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.linear),
+    );
+
+    _positionAnimation2 = Tween<double>(begin: 600, end: 0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.linear),
+    );
+
+    // Start the animation loop
+    _controllerArtist.repeat();
+
+    // Set up animations
     _hintAnimation = Tween<Offset>(
       begin: Offset(0, 0), // Start position
       end: Offset(0, -1), // Slide up position
     ).animate(_controller);
 
     _hintColorAnimation = ColorTween(
-      begin: Colors.white.withOpacity(0.5) , // Start with transparent
-      end: const Color.fromARGB(0, 148, 37, 37), // End with the desired color and opacity
+      begin: Colors.white.withOpacity(0.5), // Start with transparent
+      end: const Color.fromARGB(0, 148, 37, 37), // End with desired color and opacity
     ).animate(_controller);
 
     _colorAnimation = ColorTween(
@@ -70,40 +102,36 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
     ).animate(_controllerFade);
 
     _focusNode = FocusNode();
-
-    // Start hint text change every 2 seconds
+    _textEditingController = TextEditingController();
     _changeHintText();
 
     // Add listener to focus node
     _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        // Hide hint text when focused
+      if (_focusNode.hasFocus && _textEditingController.text.isEmpty) {
         _controllerFade.forward();
         _controller.forward();
-      } else {
-        // Show hint text when not focused
+      } else if (!_focusNode.hasFocus && _textEditingController.text.isEmpty) {
         _controller.reverse();
         _controllerFade.reverse();
       }
     });
   }
 
-  // Function to toggle the text color fade on click
   void _toggleTextVisibility() {
     if (_isFadedOut) {
-      _controllerFade.reverse(); // Fade in the text
+      _controllerFade.reverse();
     } else {
-      _controllerFade.forward(); // Fade out the text
+      _controllerFade.forward();
     }
 
     setState(() {
-      _isFadedOut = !_isFadedOut; // Toggle the fade state
+      _isFadedOut = !_isFadedOut;
     });
   }
 
   void _changeHintText() {
     Future.delayed(Duration(seconds: 2), () {
-      if (!_focusNode.hasFocus) { // Only change hint if not focused
+      if (!_focusNode.hasFocus && _textEditingController.text.isEmpty) {
         _controller.forward().then((_) {
           setState(() {
             _currentHintIndex = (_currentHintIndex + 1) % hints.length;
@@ -113,16 +141,18 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
           });
         });
       } else {
-        _changeHintText(); // Call again to maintain the hint change cycle
+        _changeHintText(); // Continue changing hints even if focus is lost
       }
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose(); 
+    _controller.dispose();
     _controllerFade.dispose();
-    _focusNode.dispose(); 
+    _controllerArtist.dispose(); // Added semicolon here
+    _focusNode.dispose();
+    _textEditingController.dispose();
     super.dispose();
   }
 
@@ -150,7 +180,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                           PageTransition(
                             child: const MainWrapper(initialPage: 0),
                             type: PageTransitionType.fade,
-                            duration: const Duration(milliseconds: 200),
+                            duration: const Duration(milliseconds: 300),
                           ),
                         );
                       },
@@ -181,6 +211,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                           // TextField for input
                         Positioned.fill(
                           child: TextField(
+                            controller: _textEditingController,
                             focusNode: _focusNode,
                             style: TextStyle(
                               color: Colors.white,
@@ -265,232 +296,223 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Transform.translate(
+                    offset: Offset(3, 0), // Move 5 units to the left (negative x-direction)
+                    child: Container(
+                      height: 50,
+                      width: 40,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'lib/resources/svg/melody.svg',
+                          color: Colors.white,
+                          height: 22,
+                          width: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               )
             ],
           ),
         ),
       ),
-      body: ListView(
-        children: [
-          Column(
-            children: List.generate(2, (index) {
-              return Column(
-                children: [
-                  InkWell(
-                    onTap:(){},
-                    child: Container(
-                      height: 40,
-                      width: double.infinity, // Fixed width for each container
-                      margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
+      body: BlocConsumer<OnTuneBloc, OnTuneState>(
+        listener: (context, state) {
+          if (state is FetchExplorer) {
+            print("Fetched explorer liste: ${state.explorerList.length}");
+          }
+        },
+        builder: (context, state) {
+          if (state is LoadingTune) {
+            context.read<OnTuneBloc>().add(LoadTune());
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is FetchExplorer) {
+
+            final List<Randomized> songs = state.explorerList;
+            List<dynamic> double_single = songs.take(20).toList();
+            List<dynamic> long_single = songs.skip(10).take(3).toList();
+
+            return ListView(
+              children: [
+                for (var single in long_single)
+                  LongSingle(song: single),
+                ElevatedButton(
+                  onPressed: (){},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                  child: Container(
+                    height: 40,
+                    // margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                      child: Text(
+                        'See more',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                        ),
+                      )
+                    )
+                  )
+                ),
+                Container(
+                  height: 30,
+                  width: double.infinity,
+                  color: Colors.white10,
+                ),
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     Container(
+                //       margin: const EdgeInsets.all(20),
+                //       child: Text(
+                //         'Our Artist',
+                //         style: const TextStyle(
+                //           color: Colors.white,
+                //           fontSize: 13,
+                //         ),
+                //       ),
+                //     ),
+                //     Container(
+                //       width: double.infinity,
+                //       height: 80,
+                //       child: Stack(
+                //         children: [
+                //           AnimatedBuilder(
+                //             animation: _positionAnimation1,
+                //             builder: (context, child) {
+                //               return AnimatedPositioned(
+                //                 duration: Duration(seconds: 1), // No animation duration, it’s controlled by the controller
+                //                 left: _positionAnimation1.value, // Use the animation value for the position
+                //                 top: 0,
+                //                 child: Container(
+                //                   height: 35,
+                //                   width: 150,
+                //                   decoration: BoxDecoration(
+                //                     borderRadius: BorderRadius.circular(20),
+                //                     color: Colors.blue,
+                //                   ),
+                //                 ),
+                //               );
+                //             },
+                //           ),
+                //           AnimatedBuilder(
+                //             animation: _positionAnimation2,
+                //             builder: (context, child) {
+                //               return AnimatedPositioned(
+                //                 duration: Duration(seconds: 1), // No animation duration, it’s controlled by the controller
+                //                 left: _positionAnimation2.value, // Use the animation value for the position
+                //                 top: 45,
+                //                 child: Container(
+                //                   height: 35,
+                //                   width: 150,
+                //                   decoration: BoxDecoration(
+                //                     borderRadius: BorderRadius.circular(20),
+                //                     color: Colors.red,
+                //                   ),
+                //                 ),
+                //               );
+                //             },
+                //           ),
+                //         ],
+                //       ),
+                //     )
+                //   ],
+                // ),                                  
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(20),
+                      child: Text(
+                        'Search Suggestions',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
                       ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Container(
-                                //   child: Center(
-                                //     child: Text(
-                                //       '1',
-                                //       style: TextStyle(
-                                //         fontSize: 17,
-                                //         color: Colors.white54,
-                                //         fontWeight: FontWeight.w300
-                                //       ),
-                                //     ),
-                                //   )
-                                // ),
-                                // SizedBox(width: 40),
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(2)
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            return SizedBox(
+                              child: GridView.builder(
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 10, // Minimized vertical spacing
+                                  crossAxisSpacing: 10, // Minimized horizontal spacing
+                                  childAspectRatio: 145 / 110 // Keep as needed
+                                ),
+                                itemCount: 20, // Set item count as required
+                                shrinkWrap: true, 
+                                physics: const NeverScrollableScrollPhysics(), // Disable internal scrolling if needed
+                                padding: const EdgeInsets.symmetric(horizontal: 20), // Reduce overall padding around the grid
+                                itemBuilder: (_, index) => GridTile(
+                                  child: SearchSection(
+                                    song: double_single[index], 
                                   ),
                                 ),
-                                SizedBox(width: 10),
-                                Container(
-                                  height: 40,
-                                  margin: EdgeInsets.symmetric(horizontal: 1),
-                                  child: Center(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                        'APT',
-                                          style: TextStyle(color: Colors.white, fontSize: 13.0)
-                                        ),
-                                        Text(
-                                          'ROSE, Bruno Mars',
-                                          style: TextStyle(color: Colors.white54, fontSize: 8.0)
-                                        )
-                                      ],
-                                    ),
-                                  )
+                              ),
+                            );
+                          }
+                        ),
+                        Container(
+                          height: 200,
+                          width: double.infinity,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'onTune',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white
+                                  ),
+                                ),
+                                Text(
+                                  'Hello World Negah',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.white30
+                                  ),
                                 )
                               ],
                             ),
                           ),
-                          Positioned(
-                            right: 0,
-                            child: Container(
-                              height: 40,
-                              margin: EdgeInsets.symmetric(vertical: 10),
-                              child: Text(
-                                '2:00',
-                                style: TextStyle(color: Colors.white54, fontSize: 10.0)
-                              )
-                            ) 
-                          )
-                        ]
-                      )
+                        )
+                      ]
                     ),
-                  ),
-                  Container(
-                    color: Colors.white10,
-                    height: 1,
-                    width: double.infinity,
-                  ),
-                ]
-              );
-            }),
-          ),
-          ElevatedButton(
-            onPressed: (){},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero, // Rounded corners
-              ),
-            ),
-            child: Container(
-              height: 40,
-              // margin: EdgeInsets.symmetric(horizontal: 20),
-              child: Center(
-                child: Text(
-                  'See more',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.white,
-                  ),
+                  ],
                 )
-              )
-            )
-          ),
-          Container(
-            height: 30,
-            width: double.infinity,
-            color: Colors.white10,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.all(20),
-                child: Text(
-                  'Search Suggestions',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                  ),
-                ),
+              ]
+            );
+          } else if (state is ErrorTune) {
+            return Center(
+              child: Text(
+                "Error: ${state.response}",
+                style: TextStyle(color: Colors.white),
               ),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  // Calculate how many rows are needed based on item count and crossAxisCount
-                  int crossAxisCount = 2;
-                  int rowCount = (10 / crossAxisCount).ceil(); // Adjust for your item count
-                  // Calculate total height: (item height + spacing) * number of rows
-                  double itemHeight = 190;
-                  double spacing = 12;
-                  double totalHeight = (itemHeight * rowCount) + (spacing * (rowCount - 1));
-                  return SizedBox(
-                    height: totalHeight, // Adjust the height as needed
-                    child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 10, // Minimized vertical spacing
-                        crossAxisSpacing: 10, // Minimized horizontal spacing
-                        childAspectRatio: 140 / 125 // Keep as needed
-                      ),
-                      itemCount: 11, // Set item count as required
-                      shrinkWrap: true, 
-                      physics: const NeverScrollableScrollPhysics(), // Disable internal scrolling if needed
-                      padding: const EdgeInsets.symmetric(horizontal: 20), // Reduce overall padding around the grid
-                      itemBuilder: (_, index) => GridTile(
-                        child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: 160,
-                                  decoration: BoxDecoration(
-                                    color: primary_color, // Replace with your desired color
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4), // Adjust vertical spacing within the item
-                              Container(
-                                width: double.infinity,
-                                child: Stack(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: const [
-                                        Text(
-                                          'Happier Than Ever',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        SizedBox(height: 2), // Adjust spacing between texts
-                                        Text(
-                                          'Billie Eilish',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.w300,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Positioned(
-                                      right: 5,
-                                      child: Container(
-                                        height: 30,
-                                        child: Center(
-                                          child: Icon(
-                                            size: 15,
-                                            color: Colors.white,
-                                            Icons.headset_rounded
-                                          )
-                                        ),
-                                      )
-                                    )
-                                  ]
-                                )
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              ),
-              const SizedBox(height: 20),
-            ],
-          )
-        ]
-      ),
+            );
+          }
+          return const SizedBox.shrink();
+          
+        }
+      )
     );
   }
 }
