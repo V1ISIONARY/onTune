@@ -6,17 +6,22 @@ plugins {
 }
 
 android {
+    ndkVersion "27.2.12479018"
     namespace = "com.example.ontune"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = "17"
+    }
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
     }
 
     defaultConfig {
