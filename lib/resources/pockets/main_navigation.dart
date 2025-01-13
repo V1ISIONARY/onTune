@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ontune/frontend/credentials/menu/profile.dart';
+import 'package:ontune/frontend/credentials/menu/profile/profile.dart';
 import 'package:ontune/frontend/front/listening.dart';
 import 'package:ontune/frontend/home.dart';
 import 'package:ontune/frontend/library.dart';
@@ -136,7 +136,7 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                 Navigator.push(
                   context,
                   PageTransition(
-                    child: profile(accId: '1', onToggle: () {  },),
+                    child: Profile(accId: '1', onToggle: () {  }, initialPage: 0),
                     type: PageTransitionType.rightToLeft,
                     duration: Duration(milliseconds: 200)
                   )

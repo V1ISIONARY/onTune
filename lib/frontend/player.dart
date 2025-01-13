@@ -38,7 +38,7 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
   Duration _position = Duration.zero;
   double frontContainerHeight = 300;
   bool isLyricsVisible = false;
-   bool _isPlaying = false;
+  bool _isPlaying = false;
   String musicTitle = '';
   double _opacity = 0.0;
   String writer = '';
