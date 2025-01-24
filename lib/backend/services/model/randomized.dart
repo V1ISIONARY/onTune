@@ -20,10 +20,10 @@ class Randomized {
 
   factory Randomized.fromJson(Map<String, dynamic> json) {
     return Randomized(
-      musicTitle: json['title'] ?? 'Unknown Title', 
-      musicWriter: json['writer'] ?? 'Unknown Writer',
-      audioUrl: json['url'] ?? 'No URL Available',  
-      thumnail: json['image_url'] ?? 'No Url Available',
+      musicTitle: json['musicTitle'] ?? 'Unknown Title', 
+      musicWriter: json['musicWriter'] ?? 'Unknown Writer',
+      audioUrl: json['audioUrl'] ?? 'No URL Available',  
+      thumnail: json['thumbnail'] ?? 'No Url Available',
       playlistUrl: json['playlistUrl'] ?? 'Unknown Url',
       subscribers: json['subscribers'] ?? 'N/A',
       writerLogo: json['writerLogo'] ?? 'N/A'

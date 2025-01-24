@@ -182,7 +182,7 @@ class _HomeState extends State<Home> {
                 MoreMusicLike(title: 'More Music like Frank Sinatra', songs: songs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
                 CommunitySection(songs: songs),
                 MusicSection(title: "Today's biggest hits", subtitle: "Today's hits you can't miss", songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
-                NewReleasedSongs(songs: songs),
+                // NewReleasedSongs(songs: songs),
                 AlbumSection(title: 'Artist Album', songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
               ],
             );

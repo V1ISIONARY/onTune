@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ontune/frontend/credentials/menu/profile/profile.dart';
+import 'package:ontune/frontend/credentials/profile.dart';
 import 'package:ontune/frontend/front/listening.dart';
 import 'package:ontune/frontend/home.dart';
 import 'package:ontune/frontend/library.dart';
@@ -79,7 +79,7 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
       Home(onToggle: toggleContainer, Drawable: drawerOpen), // Pass toggleContainer to Home
       Search(enableReturn: true),
       Musicbox(),
-      Library(),
+      Library(Drawable: drawerOpen),
       Notif()
     ];
   }

@@ -6,33 +6,28 @@ import 'model/classification.dart';
 import 'model/randomized.dart';
 
 class OnTuneRepository {
-  final String apiURL = 'http://on-tune-api.vercel.app';
+  final String apiURL = 'https://on-tune-api.vercel.app';
   final AudioPlayer _audioPlayer = AudioPlayer();
   
   Future<List<Randomized>> fetchExplore() async {
     try {
-      // Make the HTTP GET request
       final response = await http.get(Uri.parse('$apiURL/playlist'));
 
-      // Check if the response status code is 200 (OK)
       if (response.statusCode == 200) {
-        // Parse the JSON response body
+        print('Response body: ${response.body}');  // Log the response
         final data = json.decode(response.body);
 
-        // Check if 'songInfo' is present and is a list
         if (data['songInfo'] != null && data['songInfo'] is List) {
-          // Map the data to a list of Randomized objects
           final songList = data['songInfo'] as List;
           return songList.map((song) => Randomized.fromJson(song)).toList();
         } else {
           throw Exception("Unexpected response format: 'songInfo' is null or not a list");
         }
       } else {
-        // Handle non-200 status code
         throw Exception("Failed to fetch data. Status code: ${response.statusCode}");
       }
     } catch (e) {
-      // Handle any errors that occur during the HTTP request or JSON parsing
+      print("Error: $e");  // Log the error
       throw Exception("Error fetching explore data: $e");
     }
   }

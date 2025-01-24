@@ -36,11 +36,11 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
   late TextEditingController _textEditingController;
   bool _isFadedOut = false;
 
-  late AnimationController _controllerArtist; // Animation for container movement
+  late AnimationController _controllerArtist; 
   late Animation<double> _positionAnimation1;
   late Animation<double> _positionAnimation2;
-  double position1 = 300; // Initial position for the first container (right side)
-  double position2 = 300; // Initial position for the second container (right side)
+  double position1 = 300; 
+  double position2 = 300; 
 
   final List<String> hints = [
     'Cotton Candy - Arthur Nery',
@@ -56,7 +56,6 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    // Initialize controllers
     _controller = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -67,13 +66,11 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    // Initialize the animation controller
     _controllerArtist = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
 
-    // Define the animations for both containers
     _positionAnimation1 = Tween<double>(begin: 400, end: -200).animate(
       CurvedAnimation(parent: _controller, curve: Curves.linear),
     );
@@ -82,30 +79,27 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
       CurvedAnimation(parent: _controller, curve: Curves.linear),
     );
 
-    // Start the animation loop
     _controllerArtist.repeat();
 
-    // Set up animations
     _hintAnimation = Tween<Offset>(
-      begin: Offset(0, 0), // Start position
-      end: Offset(0, -1), // Slide up position
+      begin: Offset(0, 0), 
+      end: Offset(0, -1), 
     ).animate(_controller);
 
     _hintColorAnimation = ColorTween(
-      begin: Colors.white.withOpacity(0.5), // Start with transparent
-      end: const Color.fromARGB(0, 148, 37, 37), // End with desired color and opacity
+      begin: Colors.white.withOpacity(0.5), 
+      end: const Color.fromARGB(0, 148, 37, 37), 
     ).animate(_controller);
 
     _colorAnimation = ColorTween(
-      begin: Colors.white70, // Start with white color
-      end: Colors.transparent, // Fade to transparent
+      begin: Colors.white70, 
+      end: Colors.transparent, 
     ).animate(_controllerFade);
 
     _focusNode = FocusNode();
     _textEditingController = TextEditingController();
     _changeHintText();
 
-    // Add listener to focus node
     _focusNode.addListener(() {
       if (_focusNode.hasFocus && _textEditingController.text.isEmpty) {
         _controllerFade.forward();
@@ -137,11 +131,11 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
             _currentHintIndex = (_currentHintIndex + 1) % hints.length;
           });
           _controller.reverse().then((_) {
-            _changeHintText(); // Recursively call to change hints
+            _changeHintText(); 
           });
         });
       } else {
-        _changeHintText(); // Continue changing hints even if focus is lost
+        _changeHintText();
       }
     });
   }
@@ -150,7 +144,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
   void dispose() {
     _controller.dispose();
     _controllerFade.dispose();
-    _controllerArtist.dispose(); // Added semicolon here
+    _controllerArtist.dispose(); 
     _focusNode.dispose();
     _textEditingController.dispose();
     super.dispose();
@@ -207,8 +201,6 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                       height: 30,
                       child: Stack(
                         children: [
-                          // TextField for input
-                          // TextField for input
                         Positioned.fill(
                           child: TextField(
                             controller: _textEditingController,
@@ -220,9 +212,9 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.black,
-                              hintText: '', // No hint text in TextField
+                              hintText: '', 
                               hintStyle: TextStyle(
-                                color: Colors.transparent, // Hide hint text in field
+                                color: Colors.transparent, 
                               ),
                               contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0), // Padding adjustment
                               border: OutlineInputBorder(
@@ -240,10 +232,9 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        // Hint text sliding up inside the TextField's border
                         Positioned(
-                          top: 6,
-                          left: 12, // Padding for hint text alignment
+                          top: 6.3,
+                          left: 12, 
                           right: 12,
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,16 +242,16 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                               GestureDetector(
                                 onTap: (){
                                   FocusScope.of(context).requestFocus(_focusNode);
-                                }, // Handle the click
+                                },
                                 child: Padding(
                                   padding: EdgeInsets.only(right: 4),
                                   child: AnimatedBuilder(
-                                    animation: _controllerFade, // Listen to the animation controller
+                                    animation: _controllerFade, 
                                     builder: (context, child) {
                                       return Text(
                                         "Search for",
                                         style: TextStyle(
-                                          color: _colorAnimation.value, // Change color during animation
+                                          color: _colorAnimation.value, 
                                           fontSize: 13,
                                         ),
                                       );
@@ -280,7 +271,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                                       child: Text(
                                         hints[_currentHintIndex],
                                         style: TextStyle(
-                                          color: _hintColorAnimation.value, // Color changes during animation
+                                          color: _hintColorAnimation.value, 
                                           fontSize: 13,
                                         ),
                                       ),
@@ -302,7 +293,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                 child: GestureDetector(
                   onTap: () {},
                   child: Transform.translate(
-                    offset: Offset(3, 0), // Move 5 units to the left (negative x-direction)
+                    offset: Offset(3, 0),
                     child: Container(
                       height: 50,
                       width: 40,
@@ -343,7 +334,9 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                 for (var single in long_single)
                   LongSingle(song: single),
                 ElevatedButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
@@ -352,7 +345,6 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                   ),
                   child: Container(
                     height: 40,
-                    // margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Center(
                       child: Text(
                         'See more',
@@ -447,22 +439,28 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
                         LayoutBuilder(
                           builder: (context, constraints) {
                             return SizedBox(
-                              child: GridView.builder(
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 10, // Minimized vertical spacing
-                                  crossAxisSpacing: 10, // Minimized horizontal spacing
-                                  childAspectRatio: 145 / 110 // Keep as needed
-                                ),
-                                itemCount: 20, // Set item count as required
-                                shrinkWrap: true, 
-                                physics: const NeverScrollableScrollPhysics(), // Disable internal scrolling if needed
-                                padding: const EdgeInsets.symmetric(horizontal: 20), // Reduce overall padding around the grid
-                                itemBuilder: (_, index) => GridTile(
-                                  child: SearchSection(
-                                    song: double_single[index], 
-                                  ),
-                                ),
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  double screenWidth = constraints.maxWidth;
+                                  int crossAxisCount = (screenWidth / 200).floor(); 
+                                  return GridView.builder(
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount, 
+                                      mainAxisSpacing: 10, 
+                                      crossAxisSpacing: 10, 
+                                      childAspectRatio: 130 / 110, 
+                                    ),
+                                    itemCount: 20, 
+                                    shrinkWrap: true, 
+                                    physics: const NeverScrollableScrollPhysics(), 
+                                    padding: const EdgeInsets.symmetric(horizontal: 20), 
+                                    itemBuilder: (_, index) => GridTile(
+                                      child: SearchSection(
+                                        song: double_single[index], 
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           }
