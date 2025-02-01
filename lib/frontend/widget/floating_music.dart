@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:ontune/frontend/player.dart';
+import 'package:ontune/frontend/pages/player.dart';
 import 'package:ontune/resources/schema.dart';
-import '../../frontend/home.dart';
+import '../pages/home.dart';
 
 class FloatingMusic extends StatefulWidget {
   final String initialAudioUrl;

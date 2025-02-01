@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ontune/frontend/credentials/profile.dart';
-import 'package:ontune/frontend/front/listening.dart';
-import 'package:ontune/frontend/home.dart';
-import 'package:ontune/frontend/library.dart';
-import 'package:ontune/frontend/search.dart';
+import 'package:ontune/frontend/pages/credentials/menu/profile.dart';
+import 'package:ontune/frontend/pages/credentials/menu/settings.dart';
+import 'package:ontune/frontend/pages/introduction/listening.dart';
+import 'package:ontune/frontend/pages/home.dart';
+import 'package:ontune/frontend/pages/library.dart';
+import 'package:ontune/frontend/pages/search.dart';
 import 'package:ontune/resources/schema.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // Add this for SvgPicture
+import 'package:flutter_svg/flutter_svg.dart'; 
 import '../../backend/cubit/bnc_cubit.dart';
-import '../../frontend/credentials/menu/new_music.dart';
-import '../../frontend/musicbox.dart';
-import '../../frontend/notification.dart';
+import '../pages/credentials/menu/new_music.dart';
+import '../pages/musicbox.dart';
+import '../pages/notification.dart';
 import 'floating_music.dart';
 
 class MainWrapper extends StatefulWidget {
-  final int initialPage; // New parameter to accept the initial page index
+  final int initialPage; 
   const MainWrapper({
     super.key,
     required this.initialPage,
-  }); // Constructor update
+  }); 
 
   @override
   State<MainWrapper> createState() => MainWrapperState();
@@ -34,14 +35,13 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
   late Animation<Alignment> _beginAnimation;
   late Animation<Alignment> _endAnimation;
 
-  // Store the top-level pages
   late List<Widget> topLevelPages;
 
   @override
   void initState() {
     super.initState();
-    pageController = PageController(initialPage: widget.initialPage); // Set initial page
-    topLevelPages = _initializeTopLevelPages(); // Initialize topLevelPages
+    pageController = PageController(initialPage: widget.initialPage);
+    topLevelPages = _initializeTopLevelPages(); 
 
     _controller = AnimationController(
       duration: Duration(seconds: 5),
@@ -49,16 +49,16 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
     )..repeat(reverse: true);
 
     _beginAnimation = Tween<Alignment>(
-      begin: Alignment(-1.0, -1.0), // Start outside the top-left corner
-      end: Alignment(1.0, 1.0),     // End outside the bottom-right corner
+      begin: Alignment(-1.0, -1.0), 
+      end: Alignment(1.0, 1.0),     
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
     ));
 
     _endAnimation = Tween<Alignment>(
-      begin: Alignment(1.0, -1.0), // Start outside the top-right corner
-      end: Alignment(-1.0, 1.0),   // End outside the bottom-left corner
+      begin: Alignment(1.0, -1.0), 
+      end: Alignment(-1.0, 1.0), 
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeInOut,
@@ -73,10 +73,9 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
     super.dispose();
   }
 
-  /// Initialize top-level pages
   List<Widget> _initializeTopLevelPages() {
     return [
-      Home(onToggle: toggleContainer, Drawable: drawerOpen), // Pass toggleContainer to Home
+      Home(onToggle: toggleContainer, Drawable: drawerOpen),
       Search(enableReturn: true),
       Musicbox(),
       Library(Drawable: drawerOpen),
@@ -90,7 +89,6 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
     });
   }
 
-  /// on Page Changed
   void onPageChanged(int page) {
     BlocProvider.of<bnc>(context).changeSelectedIndex(page);
   }
@@ -105,14 +103,14 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.transparent, // Set the scaffold background to transparent
-      extendBody: true, // Make sure the body extends behind the AppBar if there is one
+      backgroundColor: Colors.transparent, 
+      extendBody: true, 
       body: _mainWrapperBody(),
       bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min, // Ensure it takes minimum height
+        mainAxisSize: MainAxisSize.min, 
         children: [
           FloatingMusic(key: _floatingMusicKey, initialAudioUrl: ''),
-          _mainWrapperBottomNavBar(context), // Keep the bottom navigation bar below
+          _mainWrapperBottomNavBar(context),
         ],
       ),
       drawer: _drawer(context)
@@ -158,8 +156,8 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                         ),
                         child: ClipOval(
                           child: Image.asset(
-                            'lib/resources/images/static-profile.jpeg',  // Use Image.asset for local images
-                            fit: BoxFit.cover,  // Make sure the image covers the container
+                            'lib/resources/image/static-profile.jpeg', 
+                            fit: BoxFit.cover, 
                           ),
                         ),
                       ),
@@ -447,7 +445,16 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ElevatedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          child: Settings(),
+                          type: PageTransitionType.rightToLeft,
+                          duration: Duration(milliseconds: 200)
+                        )
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primary_color,
                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Button padding
