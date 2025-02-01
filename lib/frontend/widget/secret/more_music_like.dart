@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../backend/services/model/randomized.dart';
-import '../../schema.dart';
+import '../../../resources/schema.dart';
 import 'actions/single_music.dart';
 import '../floating_music.dart';
 import 'dart:math';

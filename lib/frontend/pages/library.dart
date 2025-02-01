@@ -1,14 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ontune/frontend/search.dart';
+import 'package:ontune/frontend/pages/search.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../backend/bloc/on_tune_bloc.dart';
-import '../backend/services/model/randomized.dart';
-import '../resources/pockets/main_navigation.dart';
-import '../resources/pockets/widgets/search_section.dart';
-import '../resources/schema.dart';
+import '../../backend/bloc/on_tune_bloc.dart';
+import '../../backend/services/model/randomized.dart';
+import '../widget/main_navigation.dart';
+import '../widget/secret/search_section.dart';
+import '../../resources/schema.dart';
 
 class Library extends StatefulWidget {
 
@@ -64,7 +64,7 @@ class _LibraryState extends State<Library> {
                             ),
                             child: ClipOval(
                               child: Image.asset(
-                                'lib/resources/images/static-profile.jpeg',  // Use Image.asset for local images
+                                'lib/resources/image/static-profile.jpeg',  // Use Image.asset for local images
                                 fit: BoxFit.cover,  // Make sure the image covers the container
                               ),
                             ),

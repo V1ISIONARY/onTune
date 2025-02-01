@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../backend/cubit/bnc_cubit.dart';
-import '../../resources/pockets/main_navigation.dart';
-import 'menu/profile/favorite.dart';
-import 'menu/profile/heart.dart';
-import 'menu/profile/myplaylist.dart';
-import 'menu/profile/private_playlist.dart';
-import 'menu/profile/recent.dart';
+import '../../../../backend/cubit/bnc_cubit.dart';
+import '../../../widget/main_navigation.dart';
+import 'profile/favorite.dart';
+import 'profile/heart.dart';
+import 'profile/myplaylist.dart';
+import 'profile/private_playlist.dart';
+import 'profile/recent.dart';
 
 class Profile extends StatefulWidget {
   final String accId;
@@ -121,7 +121,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   Widget _credentialBody(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 240,
+      height: 200,
       color: Colors.black,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -136,7 +136,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(65),
               child: Image.asset(
-                'lib/resources/images/static-profile.jpeg',
+                'lib/resources/image/static-profile.jpeg',
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return const Icon(
@@ -148,7 +148,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height:20),
           const Text(
             "Louise Romero",
             style: TextStyle(
@@ -166,6 +166,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               fontWeight: FontWeight.w400,
             ),
           ),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -178,7 +179,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
         return Container(
           width: double.infinity,
           height: 40,
-          margin: const EdgeInsets.symmetric(horizontal: 15),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -223,7 +224,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
       ),
       body: Column(
         children: [
-          _credentialBody(context), // This is your profile body
+          _credentialBody(context), 
           _bodyNavigator(context),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 5),
@@ -233,7 +234,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               width: double.infinity,
             ),
           ),
-          Expanded(child: _mainWrapperBody()), // Main body for the PageView
+          Expanded(child: _mainWrapperBody()), 
         ],
       ),
     );

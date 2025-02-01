@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../frontend/player.dart';
+import '../../../pages/player.dart';
 
 class Artist extends StatelessWidget {
   final String artistName;

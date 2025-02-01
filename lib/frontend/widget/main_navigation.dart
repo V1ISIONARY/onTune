@@ -6,6 +6,7 @@ import 'package:ontune/frontend/pages/introduction/listening.dart';
 import 'package:ontune/frontend/pages/home.dart';
 import 'package:ontune/frontend/pages/library.dart';
 import 'package:ontune/frontend/pages/search.dart';
+import 'package:ontune/frontend/widget/secret/menuBtn.dart';
 import 'package:ontune/resources/schema.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_svg/flutter_svg.dart'; 
@@ -127,7 +128,8 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
           color: primary_color,
           borderRadius: BorderRadius.zero
         ),
-        child: ListView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             InkWell(
               onTap: (){
@@ -191,327 +193,82 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
               height: 1,
               color: Colors.white10,
             ),
-            Container(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          child: Listening(),
-                          type: PageTransitionType.fade,
-                          duration: Duration(milliseconds: 300)
-                        )
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary_color,
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Button padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // Rounded corners
-                      ),
-                      elevation: 0
-                    ),
-                    child: Container(
-                      height: 40,
-                      child: Center(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Icon(
-                                  size: 25,
-                                  Icons.add_box_outlined,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ),
-                            SizedBox(width: 10),
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Text(
-                                  'Add account',
+            Menubtn(
+              title: 'Add account', 
+              description: '', 
+              svgIcon: Icon(Icons.add_box_outlined), 
+              navigateTo: 'Listening',
+            ),
+            Menubtn(
+              title: 'Import', 
+              description: 'Import your downloaded music here', 
+              svgIcon: Icon(Icons.import_export_sharp), 
+              navigateTo: '',
+            ),
+            Menubtn(
+              title: 'New Music', 
+              description: '', 
+              svgIcon: Icon(Icons.electric_bolt_sharp), 
+              navigateTo: 'New',
+            ),
+            Menubtn(
+              title: 'Listening history', 
+              description: '', 
+              svgIcon: Icon(Icons.access_time), 
+              navigateTo: 'New',
+            ),
+            Menubtn(
+              title: 'Settings and privacy', 
+              description: 'Customize your settings', 
+              svgIcon: Icon(Icons.settings), 
+              navigateTo: 'Settings',
+            ),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      bottom: 20,
+                      left: 20,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            'lib/resources/svg/logo.svg',
+                            height: 17,
+                            width: 17,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Visionary',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 12,
+                                    fontSize: 10
                                   ),
-                                )
-                              ),
-                            )
-                          ],
-                        )
-                      )
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary_color,
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Button padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // Rounded corners
-                      ),
-                      elevation: 0
-                    ),
-                    child: Container(
-                      height: 40,
-                      child: Center(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Icon(
-                                  size: 25,
-                                  Icons.import_export_sharp,
-                                  color: Colors.white,
                                 ),
-                              )
-                            ),
-                            SizedBox(width: 10),
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Import",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Import your downloaded musics here",
-                                      style: TextStyle(
-                                        color: Colors.white38,
-                                        fontSize: 10,
-                                      ),
-                                    )
-                                  ]
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      )
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          child: new_music(),
-                          type: PageTransitionType.rightToLeft,
-                          duration: Duration(milliseconds: 200)
-                        )
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary_color,
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Button padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // Rounded corners
-                      ),
-                      elevation: 0
-                    ),
-                    child: Container(
-                      height: 40,
-                      child: Center(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Icon(
-                                  size: 25,
-                                  Icons.electric_bolt_sharp,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ),
-                            SizedBox(width: 10),
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Text(
-                                  "What's new",
+                                Text(
+                                  'Prototype 0.0.1',
                                   style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
+                                    color: Colors.white24,
+                                    fontSize: 8
                                   ),
                                 )
-                              ),
-                            )
-                          ],
-                        )
-                      )
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      // Navigator.push(
-                      //   context,
-                      //   PageTransition(
-                      //     child: new_music(),
-                      //     type: PageTransitionType.rightToLeft
-                      //   )
-                      // );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary_color,
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Button padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // Rounded corners
-                      ),
-                      elevation: 0
-                    ),
-                    child: Container(
-                      height: 40,
-                      child: Center(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Icon(
-                                  size: 25,
-                                  Icons.access_time,
-                                  color: Colors.white,
-                                ),
-                              )
+                              ],
                             ),
-                            SizedBox(width: 10),
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Text(
-                                  "Listening history",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                  ),
-                                )
-                              ),
-                            )
-                          ],
-                        )
+                          )
+                        ],
                       )
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          child: Settings(),
-                          type: PageTransitionType.rightToLeft,
-                          duration: Duration(milliseconds: 200)
-                        )
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary_color,
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15), // Button padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // Rounded corners
-                      ),
-                      elevation: 0
-                    ),
-                    child: Container(
-                      height: 40,
-                      child: Center(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Icon(
-                                  size: 25,
-                                  Icons.settings,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ),
-                            SizedBox(width: 10),
-                            Container(
-                              height: 40,
-                              child: Center(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Settings and privacy",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Customize your settings",
-                                      style: TextStyle(
-                                        color: Colors.white38,
-                                        fontSize: 10,
-                                      ),
-                                    )
-                                  ]
-                                )
-                              ),
-                            )
-                          ],
-                        )
-                      )
-                    ),
-                  )
-                ],
-              ),
+                    )
+                  ],
+                ),
+              )
             )
           ],
         ),
@@ -519,7 +276,6 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
     );
   }
 
-  // Bottom Navigation Bar - MainWrapper Widget
   Widget _mainWrapperBottomNavBar(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller, // Attach the animation controller

@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ontune/resources/pockets/widgets/actions/diamond_btn.dart';
+import 'package:ontune/frontend/widget/secret/actions/diamond_btn.dart';
 import 'package:ontune/resources/schema.dart';
 
-import '../../resources/pockets/designs/fade.dart';
+import '../../widget/designs/fade.dart';
 
 class diamond extends StatelessWidget {
   const diamond({super.key});

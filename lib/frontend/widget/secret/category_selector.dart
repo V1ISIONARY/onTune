@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../schema.dart';
+import '../../../resources/schema.dart';
 
 class CategorySelector extends StatefulWidget {
   const CategorySelector({Key? key}) : super(key: key);
@@ -48,7 +48,7 @@ class _CategorySelectorState extends State<CategorySelector> {
         margin: const EdgeInsets.only(right: 10), // Added margin between items
         padding: const EdgeInsets.symmetric(horizontal: 20), // Added padding to make it wider
         decoration: BoxDecoration(
-          color: isSelected ? const Color.fromARGB(255, 180, 4, 4) : primary_color, // Highlight selected category
+          color: isSelected ? Colors.white : primary_color, // Highlight selected category
           borderRadius: BorderRadius.circular(50), // Oval shape
         ),
         height: 30, // Specify height directly here
@@ -56,7 +56,7 @@ class _CategorySelectorState extends State<CategorySelector> {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.white70, // Change text color for selected
+              color: isSelected ? Colors.black : Colors.white70, // Change text color for selected
               fontSize: 11, // Font size for better readability
               fontWeight: FontWeight.w400,
             ),

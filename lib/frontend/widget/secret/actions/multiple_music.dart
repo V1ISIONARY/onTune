@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import '../../../schema.dart';
+import '../../../../resources/schema.dart';
 import '../../designs/textLimit.dart';
 
 class multiple_music_action extends StatelessWidget {

@@ -7,11 +7,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ontune/resources/schema.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../backend/bloc/on_tune_bloc.dart';
-import '../backend/services/model/randomized.dart';
-import '../resources/pockets/main_navigation.dart';
-import '../resources/pockets/widgets/long_single.dart';
-import '../resources/pockets/widgets/search_section.dart';
+import '../../backend/bloc/on_tune_bloc.dart';
+import '../../backend/services/model/randomized.dart';
+import '../widget/main_navigation.dart';
+import '../widget/secret/long_single.dart';
+import '../widget/secret/search_section.dart';
 
 class Search extends StatefulWidget {
   final bool enableReturn; 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ontune/resources/pockets/designs/textLimit.dart';
-import '../../schema.dart';
+import 'package:ontune/frontend/widget/designs/textLimit.dart';
+import '../../../resources/schema.dart';
 
 class MyPlaylist extends StatelessWidget {
   const MyPlaylist({Key? key}) : super(key: key);

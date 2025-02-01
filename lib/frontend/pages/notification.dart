@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../resources/schema.dart';
+import '../../resources/schema.dart';
 
 class Notif extends StatefulWidget {
   const Notif({super.key});

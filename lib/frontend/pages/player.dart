@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ontune/resources/schema.dart';
-import '../backend/bloc/on_tune_bloc.dart';
-import '../resources/pockets/audio_controller.dart';
-import '../resources/pockets/designs/fade.dart';
+import '../../backend/bloc/on_tune_bloc.dart';
+import '../widget/audio_controller.dart';
+import '../widget/designs/fade.dart';
 
 class Player extends StatefulWidget {
   final Color textColor;

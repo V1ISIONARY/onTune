@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ontune/resources/pockets/widgets/actions/artist.dart';
+import 'package:ontune/frontend/widget/secret/actions/artist.dart';
 
 import '../../../backend/services/model/randomized.dart';
 

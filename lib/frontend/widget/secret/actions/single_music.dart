@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:ontune/resources/pockets/floating_music.dart';
-import '../../../../frontend/home.dart';
-import '../../../schema.dart';
+import 'package:ontune/frontend/widget/floating_music.dart';
+import '../../../pages/home.dart';
+import '../../../../resources/schema.dart';
 import '../../designs/textLimit.dart';
 
 class single_music_action extends StatelessWidget {

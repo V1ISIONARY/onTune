@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ontune/frontend/search.dart';
-import 'package:ontune/resources/pockets/widgets/album_section.dart';
+import 'package:ontune/frontend/pages/search.dart';
+import 'package:ontune/frontend/widget/secret/album_section.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../backend/bloc/on_tune_bloc.dart';
-import '../backend/services/model/randomized.dart';
-import '../resources/pockets/floating_music.dart';
-import '../resources/pockets/main_navigation.dart';
-import '../resources/pockets/widgets/artist_section.dart';
-import '../resources/pockets/widgets/category_selector.dart';
-import '../resources/pockets/widgets/community_seection.dart';
-import '../resources/pockets/widgets/creativity_section.dart';
-import '../resources/pockets/widgets/horizontal_banner.dart';
-import '../resources/pockets/widgets/more_music_like.dart';
-import '../resources/pockets/widgets/music_section.dart';
-import '../resources/pockets/widgets/my_playlist.dart';
-import '../resources/pockets/widgets/new_released_songs.dart';
-import '../resources/schema.dart';
+import '../../backend/bloc/on_tune_bloc.dart';
+import '../../backend/services/model/randomized.dart';
+import '../widget/floating_music.dart';
+import '../widget/main_navigation.dart';
+import '../widget/secret/artist_section.dart';
+import '../widget/secret/category_selector.dart';
+import '../widget/secret/community_seection.dart';
+import '../widget/secret/creativity_section.dart';
+import '../widget/secret/horizontal_banner.dart';
+import '../widget/secret/more_music_like.dart';
+import '../widget/secret/music_section.dart';
+import '../widget/secret/my_playlist.dart';
+import '../widget/secret/new_released_songs.dart';
+import '../../resources/schema.dart';
 
 class Home extends StatefulWidget {
 
@@ -74,7 +74,7 @@ class _HomeState extends State<Home> {
                         ),
                         child: ClipOval(
                           child: Image.asset(
-                            'lib/resources/images/static-profile.jpeg',  // Use Image.asset for local images
+                            'lib/resources/image/static-profile.jpeg',  // Use Image.asset for local images
                             fit: BoxFit.cover,  // Make sure the image covers the container
                           ),
                         ),

@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ontune/resources/pockets/main_navigation.dart';
+import 'package:ontune/frontend/widget/main_navigation.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../backend/bloc/on_tune_bloc.dart';
-import '../../../backend/services/model/randomized.dart';
-import '../../../resources/pockets/widgets/long_single.dart';
+import '../../../../backend/bloc/on_tune_bloc.dart';
+import '../../../../backend/services/model/randomized.dart';
+import '../../../widget/secret/long_single.dart';
 
 class new_music extends StatefulWidget {
   const new_music({super.key});

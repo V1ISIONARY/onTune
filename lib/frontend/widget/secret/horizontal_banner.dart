@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../schema.dart';
+import '../../../resources/schema.dart';
 
 class HorizontalBanner extends StatelessWidget {
   const HorizontalBanner({Key? key}) : super(key: key);
