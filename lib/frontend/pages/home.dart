@@ -154,7 +154,7 @@ class _HomeState extends State<Home> {
       body: BlocConsumer<OnTuneBloc, OnTuneState>(
         listener: (context, state) {
           if (state is FetchExplorer) {
-            print("Fetched explorer list: ${state.explorerList.length}");
+            // print("Fetched explorer list: ${state.explorerList.length}");
           }
         },
         builder: (context, state) {
@@ -183,7 +183,7 @@ class _HomeState extends State<Home> {
                 CommunitySection(songs: songs),
                 MusicSection(title: "Today's biggest hits", subtitle: "Today's hits you can't miss", songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
                 // NewReleasedSongs(songs: songs),
-                AlbumSection(title: 'Artist Album', songs: recommendedSongs, onToggle: widget.onToggle, floatingMusicKey: floatingMusicKey),
+                AlbumSection(title: 'Artist Album', songs: recommendedSongs),
               ],
             );
             

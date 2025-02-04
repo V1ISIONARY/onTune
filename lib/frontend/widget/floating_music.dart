@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:ontune/frontend/pages/player.dart';
+import 'package:ontune/frontend/widget/designs/textLimit.dart';
 import 'package:ontune/resources/schema.dart';
 import '../pages/home.dart';
 
@@ -161,8 +162,6 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
 
   void _onVerticalDragEnd(DragEndDetails details) {
     if (details.velocity.pixelsPerSecond.dy < 0) {
-      print("YouTube URL: ${widget.initialAudioUrl}");
-
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -279,26 +278,24 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
                                     },
                                   ),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      iconSize: 20,
-                                      icon: const Icon(Icons.connected_tv_sharp, color: Colors.white),
-                                      onPressed: () {},
-                                      padding: EdgeInsets.zero,
-                                      constraints: BoxConstraints(),
-                                    ),
-                                    SizedBox(width: 10),
-                                    IconButton(
-                                      iconSize: 20,
-                                      icon: const Icon(Icons.play_arrow, color: Colors.white),
-                                      onPressed: () {},
-                                      padding: EdgeInsets.zero,
-                                      constraints: BoxConstraints(),
-                                    ),
-                                  ],
-                                ),
+                                Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: (){},
+                                        child: Icon(Icons.connected_tv_sharp, color: Colors.white)
+                                      ),
+                                      SizedBox(width: 20),
+                                      GestureDetector(
+                                        onTap: (){
+                                        },
+                                        child: Icon(Icons.play_arrow, color: Colors.white)
+                                      ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -314,4 +311,5 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
       ),
     );
   }
+
 }

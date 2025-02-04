@@ -3,12 +3,20 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ontune/frontend/widget/secret/music_section_player.dart';
 import 'package:ontune/resources/schema.dart';
 import '../../backend/bloc/on_tune_bloc.dart';
+import '../../backend/services/model/classification.dart';
+import '../../backend/services/model/randomized.dart';
 import '../widget/audio_controller.dart';
 import '../widget/designs/fade.dart';
+import '../widget/designs/seeMore.dart';
+import '../widget/designs/textLimit.dart';
+import '../widget/secret/album_section.dart';
+import '../widget/secret/more_music_like.dart';
 
 class Player extends StatefulWidget {
+
   final Color textColor;
   final VoidCallback onClose;
   final Color backgroundColor;
@@ -30,23 +38,22 @@ class Player extends StatefulWidget {
 }
 
 class _PlayerState extends State<Player> with TickerProviderStateMixin {
-
   final AudioController _audioController = AudioController();
   late AnimationController _animationController;
   late Animation<Offset> _scrollAnimation;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  double frontContainerHeight = 300;
+  double frontContainerHeight = 450;
   bool isLyricsVisible = false;
   bool _isPlaying = false;
-  String musicTitle = '';
+  String musicTitle = 'Unknown Title';
   double _opacity = 0.0;
-  String writer = '';
-  String lyrics = '';
+  String writer = 'Unknown Artist';
+  String lyrics = 'No lyrics available';
  
   void toggleHeight() {
     setState(() {
-      frontContainerHeight = frontContainerHeight == 300 ? 245 : 300;
+      frontContainerHeight = frontContainerHeight == 450 ? 415 : 450;
     });
   }
 
@@ -81,7 +88,6 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
     ));
 
     _startFadeOut();
-
   }
 
   @override
@@ -118,7 +124,6 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
       body: BlocConsumer<OnTuneBloc, OnTuneState>(
         listener: (context, state) {
           if (state is FetchedAudio) {
-
             _audioController.audioPlayer.setUrl(state.audioUrl).then((_) {
               print("Audio source set, attempting to play");
               _audioController.audioPlayer.play().then((_) {
@@ -129,584 +134,636 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
             }).catchError((error) {
               print("Error setting audio source: $error");
             });
-
           }
         },
         builder: (context, state) {
           if (state is LoadingTune) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FetchedAudio) {
-            musicTitle = state.musicTitle;
-            writer = state.musicWriter;
-            lyrics = state.lyrics;
-            return Scaffold(
-              body: ListView(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height, // Full screen height
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Stack(
-                            children: [
-                              SizedBox(
-                                width: double.infinity, // Set desired width
-                                height: double.infinity, // Set desired height
-                                child: Image.network(
-                                  'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2J2bDRzZmNraDJ4cHA3NHlmY24xd3JzcWJjNWdmOWduemJyYmxnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dYdEHJKB52aFB7k3bE/giphy.webp',
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(color: Colors.grey); // Default if image fails
-                                  },
-                                ),
-                              ),
-                              Positioned.fill(
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                                  child: Container(
-                                    color: Colors.white.withOpacity(0.2), // Adjust opacity for frosted effect
-                                  )
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        CustomPaint(
-                          painter: WhiteBackgroundPainter(height: 0.6, begin: Alignment.topLeft, end: Alignment.bottomRight),
-                          child: Container(),
-                        ),
-                        AppBar(
-                          backgroundColor: Colors.transparent,
-                          leading: IconButton(
-                            onPressed: (){
-                              context.read<OnTuneBloc>().add(LoadTune());
-                              widget.onClose();
-                            },
-                            icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white),
-                          ),
-                          title: const Text(
-                            'Recommended for you',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Colors.white),
-                          ),
-                          centerTitle: true,
-                          actions: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 10),
-                              child: IconButton(
-                                onPressed: () {
-                                  // Additional functionality here
-                                },
-                                icon: const Icon(Icons.more_horiz, color: Colors.white),
-                              ),
-                            )
-                          ],
-                        ),
-                        Container(
-                          child: Column(
-                            children: [
-                              SizedBox(height: 110),
-                              InkWell(
-                                onTap: (){
-                                  toggleHeight();
-                                },
-                                child: Container(
-                                  height: 300, // Fixed height for the container
-                                  width: double.infinity,
-                                  margin: EdgeInsets.symmetric(horizontal: 40),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        right: 0,
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.only(
-                                            bottomRight: Radius.circular(10),
-                                            bottomLeft: Radius.circular(10)
-                                          ), // Match container's border radius
-                                          child: Container(
-                                            color: Colors.black.withOpacity(0.7),
-                                            padding: EdgeInsets.all(10),
-                                            child: SingleChildScrollView(
-                                              child: Text(
-                                                limitText(lyrics.isNotEmpty ? lyrics : 'No available lyrics', 20),
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ),
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(10), // Match container's border radius
-                                        child: Stack(
-                                          fit: StackFit.expand, // Ensure the image and text fill the available space
-                                          children: [
-                                            // Front Layer: Image (Dynamic height)
-                                            Positioned(
-                                              top: 0,
-                                              left: 0,
-                                              right: 0,
-                                              child: Stack(
-                                                children: [
-                                                  AnimatedContainer(
-                                                    duration: Duration(milliseconds: 300), // Smooth height transition
-                                                    height: frontContainerHeight, // Dynamic height for the front image
-                                                    child: Image.network(
-                                                      widget.thumbnail,
-                                                      fit: BoxFit.cover, // Ensures the image covers the area
-                                                      errorBuilder: (context, error, stackTrace) {
-                                                        return Container(
-                                                          color: Colors.grey, // Default if image fails to load
-                                                          alignment: Alignment.center,
-                                                          child: Icon(
-                                                            Icons.error,
-                                                            color: Colors.white,
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Positioned(  // Icon button to toggle visibility of the lyrics section
-                                                    bottom: 10,
-                                                    right: 10,
-                                                    child: IconButton(
-                                                      icon: Icon(Icons.lyrics_outlined),  // Correctly pass the icon to the icon property
-                                                      iconSize: 20,  // Set the size of the icon
-                                                      color: Colors.white,  // Set the icon color
-                                                      onPressed: toggleHeight,  // Call toggleHeight on icon press
-                                                    ),
-                                                  ),
-                                                ]
-                                              )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ]
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 120,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width,
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      width: double.infinity,
-                                      height: 60,
-                                      child: Stack(
-                                        children: [
-                                          Positioned(
-                                            top: 20,
-                                            left: 20,
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: 200,  // Fixed width of the container
-                                                  height: 25,  // Fixed height of the container
-                                                  child: ClipRect(  // Ensure the SlideTransition does not overflow
-                                                    child: musicTitle.length < 30  // If the music title is shorter than 20 characters
-                                                      ? // No SlideTransition if the title is short
-                                                      SingleChildScrollView(  // Text will not scroll horizontally if the title is short
-                                                          scrollDirection: Axis.horizontal,
-                                                          child: Text(
-                                                            musicTitle.isNotEmpty ? musicTitle : 'Title',
-                                                            style: TextStyle(fontSize: 15, color: widget.textColor),
-                                                            textAlign: TextAlign.start,  // Align text to the start (left side)
-                                                          ),
-                                                        )
-                                                      : // SlideTransition only when the title is long enough
-                                                      SlideTransition(
-                                                          position: _scrollAnimation,  // Apply SlideTransition only for longer titles
-                                                          child: SingleChildScrollView(
-                                                            scrollDirection: Axis.horizontal,  // Allow horizontal scrolling
-                                                            child: Text(
-                                                              musicTitle.isNotEmpty ? musicTitle : 'Title',
-                                                              style: TextStyle(fontSize: 15, color: widget.textColor),
-                                                              textAlign: TextAlign.start,  // Align text to the start (left side)
-                                                            ),
-                                                          ),
-                                                        ),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  limitText(writer.isNotEmpty ? writer : 'Comperser', 20), // Handle null or empty check
-                                                  style: TextStyle(fontSize: 10, color: secondary_color),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ],
-                                            )
-                                          ),
-                                          Positioned(
-                                            top: 20,
-                                            right: 20,
-                                            child: Container(
-                                              height: 40,
-                                              child: Row(
-                                                children: [
-                                                  Center(
-                                                    child: Icon(
-                                                      size: 20,
-                                                      color: Colors.white,
-                                                      Icons.headset_rounded
-                                                    )
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Center(
-                                                    child: Icon(
-                                                      size: 20,
-                                                      color: Colors.white,
-                                                      Icons.heart_broken
-                                                    )
-                                                  )
-                                                ]
-                                              ),
-                                            )
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                                      child: SliderTheme(
-                                        data: SliderTheme.of(context).copyWith(
-                                          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0), // Removes the thumb
-                                          overlayShape: RoundSliderOverlayShape(overlayRadius: 0),  // Removes the overlay on thumb
-                                        ),
-                                        child: Slider(
-                                          value: _position.inSeconds.toDouble(),
-                                          min: 0,
-                                          max: _duration.inSeconds.toDouble(),
-                                          activeColor: Colors.white38,      // Set the color of the filled (progressed) part
-                                          inactiveColor: Colors.white24,    // Set the color of the unfilled (remaining) part
-                                          onChanged: (value) {
-                                            final position = Duration(seconds: value.toInt());
-                                            _audioController.audioPlayer.seek(position);
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text("${_audioController.formatDuration(_audioController.position)}", style: TextStyle(fontSize: 11, color: widget.textColor)),
-                                          Text("${_audioController.formatDuration(_audioController.duration)}", style: TextStyle(fontSize: 11, color: widget.textColor)),
-                                        ],
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        // IconButton(
-                                        //   icon: Icon(Icons.stop, color: widget.textColor),
-                                        //   onPressed: _stop,
-                                        // ),
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 20),
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.crop_rounded,
-                                              color: widget.textColor, // Icon color from the widget properties
-                                            ),
-                                            onPressed: (){},
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: IconButton(
-                                            icon: Icon(
-                                              size: 30,
-                                              Icons.skip_previous,
-                                              color: widget.textColor, // Icon color from the widget properties
-                                            ),
-                                            onPressed: (){},
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Container(
-                                            width: 70,
-                                            height: 70,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle, // Directly use BoxShape.circle for circular shape
-                                              color: widget.textColor, // You can customize background color here
-                                            ),
-                                            child: IconButton(
-                                              icon: Icon(
-                                                size: 30,
-                                                _isPlaying ? Icons.pause : Icons.play_arrow,
-                                                color: Colors.black, // Icon color from the widget properties
-                                              ),
-                                              onPressed: () {
-                                                // Toggle play/pause on button press
-                                                _audioController.togglePlayPause();
-                                              },
-                                            )
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: IconButton(
-                                            icon: Icon(
-                                              size: 30,
-                                              Icons.skip_next,
-                                              color: widget.textColor, // Icon color from the widget properties
-                                            ),
-                                            onPressed: (){},
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(right: 20),
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.loop_outlined,
-                                              color: widget.textColor, // Icon color from the widget properties
-                                            ),
-                                            onPressed: (){},
-                                          ),
-                                        ),
-                                        // IconButton(
-                                        //   icon: Icon(_isMuted ? Icons.volume_off : Icons.volume_up, color: widget.textColor),
-                                        //   onPressed: _toggleMute,
-                                        // ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              
-                            ]
-                          )
-                        ),
-                        Positioned(
-                          bottom: -50,  // Move the container 50 units down from the bottom of its parent
-                          left: 20,  // 20 units from the left
-                          right: 20,  // 20 units from the right
-                          child: Container(
-                            width: 500,  // You can adjust this value or use double.infinity if needed
-                            height: 100,  // Height of the container
-                            decoration: BoxDecoration(
-                              color: widgetPricolor,  // Set the background color
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 20, left: 20),
-                              child: Text(
-                                'Videos from ${writer}',
-                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 100,
-                    height: 250,
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: widgetPricolor,  // Set the background color
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    margin: EdgeInsets.all(20),
-                    color: Colors.transparent,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: widgetPricolor,
-                              borderRadius: BorderRadius.circular(5)
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: widgetPricolor,
-                              borderRadius: BorderRadius.circular(5)
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: widgetPricolor,
-                              borderRadius: BorderRadius.circular(5)
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 300,
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: widgetPricolor, // Set the background color
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Stack(
-                        children: [
-                          Image.network(
-                            'https://wallpapers.com/images/hd/phil-collins-monochromatic-onstage-tzfi4v03wkyd10ak.jpg',
-                            fit: BoxFit.cover, // Ensures the image covers the area
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey, // Default if image fails to load
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  Icons.error,
-                                  color: Colors.white,
-                                ),
-                              );
-                            },
-                          ),
-                          Positioned(
-                            bottom: 0, // Position this container at the bottom of the Stack
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: widgetPricolor,
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(10),
-                                  bottomRight: Radius.circular(10),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20, bottom: 20, left: 20),
-                    child: Container(
-                      width: double.infinity,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            child: Text(
-                              'Greatest Hits of ${writer}',
-                              style: TextStyle(color: Colors.white, fontSize: 14.0, fontWeight: FontWeight.w500)
-                            )
-                          ),
-                          Positioned(
-                            right: 20,
-                            top: 2,
-                            bottom: 2,
-                            child: InkWell(
-                              onTap: (){},
-                              child: Text('See All',
-                                style: TextStyle(color: Colors.white38, fontSize: 10.0)
-                              )
-                            )
-                          )
-                        ],
-                      ),
-                    )
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      width: 140,
-                      height: 190,
-                      margin: EdgeInsets.only(left: 20),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 140,
-                            decoration: BoxDecoration(
-                              color: widgetPricolor,
-                              shape: BoxShape.rectangle,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Happier Than Ever',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w400
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Billie Elish', 
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w300
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 100)
-                ]
-              )
-            );
+            musicTitle = state.musicTitle.isNotEmpty ? state.musicTitle : musicTitle;
+            writer = state.musicWriter.isNotEmpty ? state.musicWriter : writer;
+            lyrics = state.lyrics.isNotEmpty ? state.lyrics : lyrics;
+            return _buildPlayerUI(context);
           } else if (state is ErrorTune) {
-            return Center(
-              child: Text(
-                "Error: ${state.response}",
-                style: TextStyle(color: widget.textColor),
-              ),
-            );
+            musicTitle = "Unknown Title";
+            writer = "Unknown Artist";
+            lyrics = "Lyrics not found";
+            return _buildPlayerUI(context);
+          } else {
+            return _buildPlayerUI(context);
           }
-          return const SizedBox.shrink();
-        }
+        },
       )
     );
   }
 
-}
+  Widget _buildPlayerUI(BuildContext context) {
 
-String limitText(String text, int maxLength) {
-  return text.length > maxLength ? '${text.substring(0, maxLength)}...' : text;
+    List<Randomized> randomdemoSongs = [
+      Randomized(
+        musicTitle: "Song One",
+        musicWriter: "Artist A",
+        audioUrl: "https://example.com/song1.mp3",
+        thumnail: "assets/images/song1.jpg",
+        playlistUrl: "https://example.com/playlist1",
+        subscribers: "1.2M",
+        writerLogo: "assets/images/artistA_logo.png",
+      ),
+      Randomized(
+        musicTitle: "Song Two",
+        musicWriter: "Artist B",
+        audioUrl: "https://example.com/song2.mp3",
+        thumnail: "assets/images/song2.jpg",
+        playlistUrl: "https://example.com/playlist2",
+        subscribers: "980K",
+        writerLogo: "assets/images/artistB_logo.png",
+      ),
+      Randomized(
+        musicTitle: "Song Three",
+        musicWriter: "Artist C",
+        audioUrl: "https://example.com/song3.mp3",
+        thumnail: "assets/images/song3.jpg",
+        playlistUrl: "https://example.com/playlist3",
+        subscribers: "2.5M",
+        writerLogo: "assets/images/artistC_logo.png",
+      ),
+      Randomized(
+        musicTitle: "Song Four",
+        musicWriter: "Artist D",
+        audioUrl: "https://example.com/song4.mp3",
+        thumnail: "assets/images/song4.jpg",
+        playlistUrl: "https://example.com/playlist4",
+        subscribers: "750K",
+        writerLogo: "assets/images/artistD_logo.png",
+      ),
+      Randomized(
+        musicTitle: "Song Five",
+        musicWriter: "Artist E",
+        audioUrl: "https://example.com/song5.mp3",
+        thumnail: "assets/images/song5.jpg",
+        playlistUrl: "https://example.com/playlist5",
+        subscribers: "3.1M",
+        writerLogo: "assets/images/artistE_logo.png",
+      ),
+    ];
+
+
+    List<Classification> demoSongs = [
+      Classification(
+        musicTitle: "Shape of You",
+        musicWriter: "Ed Sheeran",
+        audioUrl: "https://example.com/shape_of_you.mp3",
+        lyrics: "The club isn't the best place to find a lover...",
+      ),
+      Classification(
+        musicTitle: "Blinding Lights",
+        musicWriter: "The Weeknd",
+        audioUrl: "https://example.com/blinding_lights.mp3",
+        lyrics: "I've been tryna call, I've been on my own for long enough...",
+      ),
+      Classification(
+        musicTitle: "Levitating",
+        musicWriter: "Dua Lipa",
+        audioUrl: "https://example.com/levitating.mp3",
+        lyrics: "If you wanna run away with me, I know a galaxy...",
+      ),
+      Classification(
+        musicTitle: "Someone Like You",
+        musicWriter: "Adele",
+        audioUrl: "https://example.com/someone_like_you.mp3",
+        lyrics: "I heard that you're settled down, that you found a girl...",
+      ),
+      Classification(
+        musicTitle: "Senorita",
+        musicWriter: "Shawn Mendes & Camila Cabello",
+        audioUrl: "https://example.com/senorita.mp3",
+        lyrics: "I love it when you call me Senorita...",
+      ),
+      Classification(
+        musicTitle: "Stay",
+        musicWriter: "The Kid LAROI & Justin Bieber",
+        audioUrl: "https://example.com/stay.mp3",
+        lyrics: "I do the same thing I told you that I never would...",
+      ),
+    ];
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: ListView(
+        children: [
+          Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Stack(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: Image.network(
+                          // 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2J2bDRzZmNraDJ4cHA3NHlmY24xd3JzcWJjNWdmOWduemJyYmxnZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dYdEHJKB52aFB7k3bE/giphy.webp',
+                          widget.thumbnail,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(color: Colors.grey);
+                          },
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                          child: Container(
+                            color: Colors.white.withOpacity(0.2),
+                          )
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                CustomPaint(
+                  painter: WhiteBackgroundPainter(height: 0.6, begin: Alignment.topLeft, end: Alignment.bottomRight),
+                  child: Container(),
+                ),
+                AppBar(
+                  backgroundColor: Colors.transparent,
+                  leading: GestureDetector(
+                    onTap: (){
+                      widget.onClose();
+                    },
+                    child: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white),
+                  ),
+                  title: const Text(
+                    'Recommended for you',
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Colors.white),
+                  ),
+                  centerTitle: true,
+                  actions: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: const Icon(Icons.more_horiz, color: Colors.white),
+                      ),
+                    )
+                  ],
+                ),
+                Container(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 110),
+                      InkWell(
+                        onTap: (){
+                          toggleHeight();
+                        },
+                        child: Container(
+                          height: 450, // Fixed height for the container
+                          width: double.infinity,
+                          margin: EdgeInsets.symmetric(horizontal: 40),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10)
+                                  ), // Match container's border radius
+                                  child: Container(
+                                    color: Colors.black.withOpacity(0.7),
+                                    padding: EdgeInsets.all(10),
+                                    child: SingleChildScrollView(
+                                      child: Text(
+                                        limitText(lyrics.isNotEmpty ? lyrics : 'No available lyrics', 20),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10), // Match container's border radius
+                                child: Stack(
+                                  fit: StackFit.expand, // Ensure the image and text fill the available space
+                                  children: [
+                                    // Front Layer: Image (Dynamic height)
+                                    Positioned(
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child: Stack(
+                                        children: [
+                                          AnimatedContainer(
+                                            duration: Duration(milliseconds: 300), // Smooth height transition
+                                            height: frontContainerHeight, // Dynamic height for the front image
+                                            child: Container(
+                                              color: Colors.black,
+                                              width: double.infinity,
+                                              child: Image.network(
+                                                widget.thumbnail,
+                                                fit: BoxFit.cover, // Ensures the image covers the area
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return Container(
+                                                    color: Colors.grey, // Default if image fails to load
+                                                    alignment: Alignment.center,
+                                                    child: Icon(
+                                                      Icons.error,
+                                                      color: Colors.white,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            )
+                                          ),
+                                          Positioned(  // Icon button to toggle visibility of the lyrics section
+                                            bottom: 10,
+                                            right: 10,
+                                            child: IconButton(
+                                              icon: Icon(Icons.lyrics_outlined),  // Correctly pass the icon to the icon property
+                                              iconSize: 20,  // Set the size of the icon
+                                              color: Colors.white,  // Set the icon color
+                                              onPressed: toggleHeight,  // Call toggleHeight on icon press
+                                            ),
+                                          ),
+                                        ]
+                                      )
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ]
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 120,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: 60,
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    top: 20,
+                                    left: 20,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 200,  
+                                          height: 25,  
+                                          child: ClipRect(  
+                                            child: musicTitle.length < 30  
+                                              ? 
+                                              SingleChildScrollView(  
+                                                  scrollDirection: Axis.horizontal,
+                                                  child: Text(
+                                                    musicTitle.isNotEmpty ? musicTitle : 'Title',
+                                                    style: TextStyle(fontSize: 15, color: widget.textColor),
+                                                    textAlign: TextAlign.start,  
+                                                  ),
+                                                )
+                                              : 
+                                              SlideTransition(
+                                                  position: _scrollAnimation,  
+                                                  child: SingleChildScrollView(
+                                                    scrollDirection: Axis.horizontal,  
+                                                    child: Text(
+                                                      musicTitle.isNotEmpty ? musicTitle : 'Title',
+                                                      style: TextStyle(fontSize: 15, color: widget.textColor),
+                                                      textAlign: TextAlign.start, 
+                                                    ),
+                                                  ),
+                                                ),
+                                          ),
+                                        ),
+                                        Text(
+                                          limitText(writer.isNotEmpty ? writer : 'Comperser', 20),
+                                          style: TextStyle(fontSize: 10, color: secondary_color),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    )
+                                  ),
+                                  Positioned(
+                                    top: 20,
+                                    right: 20,
+                                    child: Container(
+                                      height: 40,
+                                      child: Row(
+                                        children: [
+                                          Center(
+                                            child: Icon(
+                                              size: 20,
+                                              color: Colors.white,
+                                              Icons.headset_rounded
+                                            )
+                                          ),
+                                          SizedBox(width: 10),
+                                          Center(
+                                            child: Icon(
+                                              size: 20,
+                                              color: Colors.white,
+                                              Icons.heart_broken
+                                            )
+                                          )
+                                        ]
+                                      ),
+                                    )
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                              child: SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0), 
+                                  overlayShape: RoundSliderOverlayShape(overlayRadius: 0),  
+                                ),
+                                child: Slider(
+                                  value: _position.inSeconds.toDouble(),
+                                  min: 0,
+                                  max: _duration.inSeconds.toDouble(),
+                                  activeColor: Colors.white38,      
+                                  inactiveColor: Colors.white24,    
+                                  onChanged: (value) {
+                                    final position = Duration(seconds: value.toInt());
+                                    _audioController.audioPlayer.seek(position);
+                                  },
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("${_audioController.formatDuration(_audioController.position)}", style: TextStyle(fontSize: 11, color: widget.textColor)),
+                                  Text("${_audioController.formatDuration(_audioController.duration)}", style: TextStyle(fontSize: 11, color: widget.textColor)),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 20),
+                                  child: GestureDetector(
+                                    onTap: (){},
+                                    child: Icon(
+                                      Icons.crop_rounded,
+                                      color: widget.textColor,
+                                    ),
+                                  )
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: (){},
+                                    child: Icon(
+                                      size: 30,
+                                      Icons.skip_previous,
+                                      color: widget.textColor,
+                                    ),
+                                  )
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    width: 70,
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle, 
+                                      color: widget.textColor, 
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: (){
+                                        _audioController.togglePlayPause();
+                                      },
+                                      child: Icon(
+                                        size: 30,
+                                        _isPlaying ? Icons.pause : Icons.play_arrow,
+                                        color: Colors.black, 
+                                      ),
+                                    )
+                                  ),
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: (){},
+                                    child:  Icon(
+                                      size: 30,
+                                      Icons.skip_next,
+                                      color: widget.textColor, 
+                                    ),
+                                  )
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(right: 20),
+                                  child: GestureDetector(
+                                    onTap: (){},
+                                    child:  Icon(
+                                      Icons.loop_outlined,
+                                      color: widget.textColor, 
+                                    ),
+                                  )
+                                ),
+                                // IconButton(
+                                //   icon: Icon(_isMuted ? Icons.volume_off : Icons.volume_up, color: widget.textColor),
+                                //   onPressed: _toggleMute,
+                                // ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                    ]
+                  )
+                ),
+                Positioned(
+                  bottom: 0,  
+                  left: 20,  
+                  right: 20,  
+                  child: Container(
+                    width: double.infinity, 
+                    height: 50, 
+                    decoration: BoxDecoration(
+                      color: widgetPricolor, 
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Information from ${writer}',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 400,
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: widgetPricolor,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(5),
+                bottomRight: Radius.circular(5)
+              ),
+            ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    child: IntrinsicHeight(
+                      child: Container(
+                        width: double.infinity,
+                        child: Image.network(
+                          widget.thumbnail,
+                          fit: BoxFit.cover, 
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey,
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.error,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    )
+                  )
+                ),
+                Container(
+                  margin: EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 35,
+                        color: Colors.transparent,
+                        width: double.infinity,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    writer,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    "6.6M monthly listeners",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white54,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                color: Colors.white,
+                                width: 60,
+                                height: 25,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 15),
+                        child: Container(
+                          width: double.infinity,
+                          child: LimitedText(
+                            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                            limit: 300,
+                            onSeeMore: () {
+                              // Navigator.push(
+                              //   context,
+                              // );
+                            },
+                          ),
+                        )
+                      )
+                    ],
+                  )
+                ),
+              ],
+            ),
+          ),
+          MusicSectionPlayer(
+            title: "Tredending Music",
+            subtitle: "Latest Hits of ${writer}",
+            songs: demoSongs, 
+          ),
+          MoreMusicLike(title: 'More Music like Frank Sinatra', songs: randomdemoSongs),
+          AlbumSection(title: 'Artist Album', songs: randomdemoSongs),
+          Container(
+            height: 200,
+            width: double.infinity,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'onTune',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white
+                    ),
+                  ),
+                  Text(
+                    'Hello World Negah',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w300,
+                      color: Colors.white30
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ]
+      )
+    );
+  }
+
 }

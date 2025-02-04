@@ -316,7 +316,7 @@ class _SearchState extends State<Search> with TickerProviderStateMixin {
       body: BlocConsumer<OnTuneBloc, OnTuneState>(
         listener: (context, state) {
           if (state is FetchExplorer) {
-            print("Fetched explorer liste: ${state.explorerList.length}");
+            // print("Fetched explorer liste: ${state.explorerList.length}");
           }
         },
         builder: (context, state) {

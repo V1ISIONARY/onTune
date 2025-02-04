@@ -215,7 +215,7 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
               title: 'Listening history', 
               description: '', 
               svgIcon: Icon(Icons.access_time), 
-              navigateTo: 'New',
+              navigateTo: '',
             ),
             Menubtn(
               title: 'Settings and privacy', 
@@ -228,6 +228,16 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                 width: double.infinity,
                 child: Stack(
                   children: [
+                    // Positioned(
+                    //   bottom: 21,
+                    //   right: 20,
+                    //   child: GestureDetector(
+                    //     child: Icon(
+                    //       Icons.door_front_door_rounded,
+                    //       color: Colors.white,
+                    //     ),
+                    //   )
+                    // ),
                     Positioned(
                       bottom: 20,
                       left: 20,
@@ -235,6 +245,14 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Container(
+                              width: 2,
+                              height: 18,
+                              color: Colors.white
+                            ),
+                          ),
                           SvgPicture.asset(
                             'lib/resources/svg/logo.svg',
                             height: 17,

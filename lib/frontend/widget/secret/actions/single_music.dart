@@ -7,8 +7,8 @@ import '../../designs/textLimit.dart';
 
 class single_music_action extends StatelessWidget {
 
-  final GlobalKey<FloatingMusicState> floatingMusicKey;
-  final VoidCallback onToggle; 
+  final GlobalKey<FloatingMusicState>? floatingMusicKey;
+  final VoidCallback? onToggle; 
   final String musicTitle;
   final String musicWriter;
   final String audioUrl;
@@ -16,19 +16,19 @@ class single_music_action extends StatelessWidget {
 
   const single_music_action({
     super.key,
-    required this.onToggle,
+    this.onToggle,
     required this.musicTitle,
     required this.musicWriter,
     required this.audioUrl,
     required this.thumbnail,
-    required this.floatingMusicKey,
+    this.floatingMusicKey,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        onToggle();
+        onToggle?.call();
         Home.updatedUrl.value = audioUrl;
         Home.updatedTitle.value = musicTitle;
         Home.updatedWriter.value = musicWriter;

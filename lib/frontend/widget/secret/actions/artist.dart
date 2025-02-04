@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../pages/player.dart';
+import '../../designs/textLimit.dart';
 
 class Artist extends StatelessWidget {
   final String artistName;

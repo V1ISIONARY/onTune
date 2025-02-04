@@ -7,15 +7,11 @@ class AlbumSection extends StatelessWidget {
   
   final String title;
   final List<dynamic> songs;
-  final VoidCallback onToggle;
-  final GlobalKey<FloatingMusicState> floatingMusicKey;
 
   const AlbumSection({
     Key? key,
     required this.title,
     required this.songs,
-    required this.onToggle,
-    required this.floatingMusicKey,
   }) : super(key: key);
 
   @override

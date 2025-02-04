@@ -14,7 +14,7 @@ class OnTuneRepository {
       final response = await http.get(Uri.parse('$apiURL/playlist'));
 
       if (response.statusCode == 200) {
-        print('Response body: ${response.body}');  // Log the response
+        // print('Response body: ${response.body}');  // Log the response
         final data = json.decode(response.body);
 
         if (data['songInfo'] != null && data['songInfo'] is List) {
@@ -33,51 +33,51 @@ class OnTuneRepository {
   }
   
   Future<Classification?> initializeAudio(String youtubeUrl) async {
-  try {
-    // Convert YouTube Music URL to regular YouTube URL
-    String regularYoutubeUrl = youtubeUrl.replaceFirst('music.youtube.com', 'www.youtube.com');
-    
-    final response = await http.get(
-      Uri.parse('$apiURL/get-audio?url=${Uri.encodeComponent(regularYoutubeUrl)}')
-    );
+    try {
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+      print(youtubeUrl);
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
+      final response = await http.get(
+        Uri.parse('$apiURL/get-spotify-audio?url=$youtubeUrl') // Use the raw youtubeUrl directly
+      );
 
-      // Extract fields with null safety
-      final String? audioUrl = data['audioUrl'] as String?;
-      final String title = data['title'] as String? ?? 'Unknown Title';
-      final String writer = data['writer'] as String? ?? 'Unknown Writer';
-      final String? lyrics = data['lyrics'] as String?;
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-      if (audioUrl != null) {
-        // Set the audio source
-        await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(audioUrl)));
-        print('Audio URL: $audioUrl');
-        
-        // Return classification object
-        return Classification(
-          musicTitle: title,
-          musicWriter: writer,
-          audioUrl: audioUrl,
-          lyrics: lyrics ?? 'Lyrics not available', // Default value if lyrics is null
-        );
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+
+        // Extract fields with null safety
+        final String? audioUrl = data['audioUrl'] as String?;
+        final String title = data['title'] as String? ?? 'Unknown Title';
+        final String writer = data['writer'] as String? ?? 'Unknown Writer';
+        final String? lyrics = data['lyrics'] as String?;
+
+        if (audioUrl != null) {
+          // Set the audio source
+          await _audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(audioUrl)));
+          print('Audio URL: $audioUrl');
+          
+          // Return classification object
+          return Classification(
+            musicTitle: title ?? 'Lyrics not available',
+            musicWriter: writer ?? 'Lyrics not available',
+            audioUrl: audioUrl ?? 'Lyrics not available',
+            lyrics: lyrics ?? 'Lyrics not available', // Default value if lyrics is null
+          );
+        } else {
+          print('Error: audioUrl is null');
+          return null;
+        }
       } else {
-        print('Error: audioUrl is null');
+        print('Failed to fetch audio URL: ${response.statusCode} - ${response.reasonPhrase}');
+        print('Request URL: ${response.request?.url}');
         return null;
       }
-    } else {
-      print('Failed to fetch audio URL: ${response.statusCode} - ${response.reasonPhrase}');
-      print('Request URL: ${response.request?.url}');
+    } catch (e) {
+      print("Error during initialization: $e");
       return null;
     }
-  } catch (e) {
-    print("Error during initialization: $e");
-    return null;
   }
-}
 
 }

@@ -9,15 +9,15 @@ import 'dart:math';
 class MoreMusicLike extends StatelessWidget {
   final String title;
   final List<Randomized> songs;
-  final VoidCallback onToggle;
-  final GlobalKey<FloatingMusicState> floatingMusicKey;
+  final VoidCallback? onToggle;
+  final GlobalKey<FloatingMusicState>? floatingMusicKey;
 
   const MoreMusicLike({
     Key? key,
     required this.title,
     required this.songs,
-    required this.onToggle,
-    required this.floatingMusicKey,
+    this.onToggle,
+    this.floatingMusicKey,
   }) : super(key: key);
 
   @override
@@ -125,12 +125,10 @@ class MoreMusicLike extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.only(left: index == 0 ? 20 : 0, right: 10),
                     child: single_music_action(
-                      onToggle: onToggle,
                       musicTitle: song.musicTitle,
                       musicWriter: song.musicWriter,
                       audioUrl: song.audioUrl,
                       thumbnail: song.thumnail,
-                      floatingMusicKey: floatingMusicKey,
                     ),
                   );
                 },
