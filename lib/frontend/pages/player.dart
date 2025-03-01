@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ontune/frontend/widget/secret/music_section_player.dart';
 import 'package:ontune/resources/schema.dart';
 import '../../backend/bloc/on_tune_bloc.dart';
+import '../../backend/services/model/artist.dart';
 import '../../backend/services/model/classification.dart';
 import '../../backend/services/model/randomized.dart';
 import '../widget/audio_controller.dart';
@@ -20,12 +21,15 @@ class Player extends StatefulWidget {
   final Color textColor;
   final VoidCallback onClose;
   final Color backgroundColor;
-
+  final String writer;
   final String youtubeUrl;
   final String thumbnail;
+  final String title;
 
   const Player({
     Key? key,
+    required this.title,
+    required this.writer,
     required this.youtubeUrl,
     required this.thumbnail,
     required this.backgroundColor,
@@ -49,8 +53,11 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
   String musicTitle = 'Unknown Title';
   double _opacity = 0.0;
   String writer = 'Unknown Artist';
+  String description = 'Unknown Description';
   String lyrics = 'No lyrics available';
- 
+  FetchedAudio? fetchedAudio;
+  FetchedArtist? fetchedArtist;
+
   void toggleHeight() {
     setState(() {
       frontContainerHeight = frontContainerHeight == 450 ? 415 : 450;
@@ -88,6 +95,7 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
     ));
 
     _startFadeOut();
+    context.read<OnTuneBloc>().add(FindArtist(widget.writer));
   }
 
   @override
@@ -139,20 +147,25 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
         builder: (context, state) {
           if (state is LoadingTune) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is FetchedAudio) {
-            musicTitle = state.musicTitle.isNotEmpty ? state.musicTitle : musicTitle;
-            writer = state.musicWriter.isNotEmpty ? state.musicWriter : writer;
-            lyrics = state.lyrics.isNotEmpty ? state.lyrics : lyrics;
-            return _buildPlayerUI(context);
-          } else if (state is ErrorTune) {
+          } 
+          else if (state is FetchedArtist) {
+            fetchedArtist = state; 
+            writer = fetchedArtist!.artist; 
+            description = fetchedArtist!.description; 
+          } 
+          else if (state is FetchedAudio) {
+            fetchedAudio = state;
+            musicTitle = fetchedAudio!.musicTitle.isNotEmpty ? fetchedAudio!.musicTitle : musicTitle;
+            lyrics = fetchedAudio!.lyrics.isNotEmpty ? fetchedAudio!.lyrics : lyrics;
+          } 
+          else if (state is ErrorTune) {
             musicTitle = "Unknown Title";
-            writer = "Unknown Artist";
             lyrics = "Lyrics not found";
-            return _buildPlayerUI(context);
-          } else {
-            return _buildPlayerUI(context);
+            writer = "Unknown Artist";
           }
-        },
+
+          return _buildPlayerUI(context);
+        }
       )
     );
   }
@@ -437,7 +450,7 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                                               SingleChildScrollView(  
                                                   scrollDirection: Axis.horizontal,
                                                   child: Text(
-                                                    musicTitle.isNotEmpty ? musicTitle : 'Title',
+                                                    musicTitle.isNotEmpty ? widget.title : 'Title',
                                                     style: TextStyle(fontSize: 15, color: widget.textColor),
                                                     textAlign: TextAlign.start,  
                                                   ),
@@ -448,7 +461,7 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                                                   child: SingleChildScrollView(
                                                     scrollDirection: Axis.horizontal,  
                                                     child: Text(
-                                                      musicTitle.isNotEmpty ? musicTitle : 'Title',
+                                                      musicTitle.isNotEmpty ? widget.title : 'Title',
                                                       style: TextStyle(fontSize: 15, color: widget.textColor),
                                                       textAlign: TextAlign.start, 
                                                     ),
@@ -457,7 +470,7 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                                           ),
                                         ),
                                         Text(
-                                          limitText(writer.isNotEmpty ? writer : 'Comperser', 20),
+                                          limitText(writer.isNotEmpty ? widget.writer : 'Comperser', 20),
                                           style: TextStyle(fontSize: 10, color: secondary_color),
                                           textAlign: TextAlign.center,
                                         ),
@@ -710,12 +723,9 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                         child: Container(
                           width: double.infinity,
                           child: LimitedText(
-                            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                            text:description,
                             limit: 300,
                             onSeeMore: () {
-                              // Navigator.push(
-                              //   context,
-                              // );
                             },
                           ),
                         )
@@ -726,12 +736,35 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
               ],
             ),
           ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+            decoration: BoxDecoration(
+              color: widgetPricolor,
+              borderRadius: BorderRadius.circular(5)
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Lyrics',
+                  style: TextStyle(fontSize: 13, color: Colors.white)
+                ),
+                SizedBox(height: 5),
+                Text(
+                  'Lyrics',
+                  style: TextStyle(fontSize: 11, color: Colors.white54)
+                ),
+              ],
+            )
+          ),
           MusicSectionPlayer(
             title: "Tredending Music",
             subtitle: "Latest Hits of ${writer}",
             songs: demoSongs, 
           ),
-          MoreMusicLike(title: 'More Music like Frank Sinatra', songs: randomdemoSongs),
+          MoreMusicLike(title: 'More Music like $writer', songs: randomdemoSongs),
           AlbumSection(title: 'Artist Album', songs: randomdemoSongs),
           Container(
             height: 200,

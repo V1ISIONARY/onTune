@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ontune/backend/services/model/randomized.dart';
 import 'package:ontune/backend/services/repository.dart';
+import '../../frontend/widget/secret/actions/artist.dart';
 
 part 'on_tune_event.dart';
 part 'on_tune_state.dart';
@@ -22,11 +23,8 @@ class OnTuneBloc extends Bloc<OnTuneEvent, OnTuneState> {
     });
 
     on<FindAudio>((event, emit) async {
-
-      emit(LoadingTune());  // Show loading state while fetching data
+      emit(LoadingTune());
       try {
-
-        // Fetching the classification data based on youtubeUrl
         final audioProperties = await repository.initializeAudio(event.youtubeUrl);
         if (audioProperties != null) {
           emit(FetchedAudio(
@@ -38,13 +36,19 @@ class OnTuneBloc extends Bloc<OnTuneEvent, OnTuneState> {
         } else {
           emit(const ErrorTune("Failed to fetch audio."));
         }
-
       } catch (e) {
-        emit(ErrorTune("Error occurred: ${e.toString()}"));
+        emit(ErrorTune("Error occurred: \${e.toString()}"));
       }
-
     });
 
+    on<FindArtist>((event, emit) async {
+      emit(LoadingTune());
+      try {
+        final artist = await repository.fetchArtist(event.artistName);
+        emit(FetchedArtist(artist.name, artist.description));
+      } catch (e) {
+        emit(ErrorTune("Failed to fetch artist"));
+      }
+    });
   }
-
 }

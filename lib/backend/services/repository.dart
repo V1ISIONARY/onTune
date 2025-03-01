@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
+import 'package:ontune/backend/services/model/artist.dart';
 import 'model/classification.dart';
 import 'model/randomized.dart';
 
@@ -14,7 +15,6 @@ class OnTuneRepository {
       final response = await http.get(Uri.parse('$apiURL/playlist'));
 
       if (response.statusCode == 200) {
-        // print('Response body: ${response.body}');  // Log the response
         final data = json.decode(response.body);
 
         if (data['songInfo'] != null && data['songInfo'] is List) {
@@ -77,6 +77,54 @@ class OnTuneRepository {
     } catch (e) {
       print("Error during initialization: $e");
       return null;
+    }
+  }
+
+  Future<Artist> fetchArtist(String artistName) async {
+    try {
+      final response = await http.get(Uri.parse('$apiURL/search?artist=$artistName'));
+
+      print("Response Status: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+
+        if (data.isNotEmpty) {
+          return Artist.fromJson(data);
+        } else {
+          throw Exception("Empty artist data");
+        }
+      } else {
+        throw Exception("Failed to load artist data: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching artist: $e");
+      throw Exception("Error fetching artist data");
+    }
+  }
+
+  Future<Artist> fetchLyics(String title, String writer) async {
+    try {
+      final response = await http.get(Uri.parse('$apiURL/get_lyrics?title=$title&writer=$writer'));
+
+      print("Response Status: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+
+        if (data.isNotEmpty) {
+          return Lyrics.fromJson(data);
+        } else {
+          throw Exception("Empty artist data");
+        }
+      } else {
+        throw Exception("Failed to load artist data: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching artist: $e");
+      throw Exception("Error fetching artist data");
     }
   }
 

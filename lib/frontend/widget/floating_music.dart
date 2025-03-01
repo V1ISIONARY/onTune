@@ -172,6 +172,8 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
           maxChildSize: 1.0,
           builder: (context, scrollController) {
             return Player(
+              title: updatedTitle.value,
+              writer: updatedWriter.value,
               youtubeUrl: updatedUrl.value,
               thumbnail: updatedIcon.value,
               backgroundColor: Color.fromARGB(255, 2, 149, 85),
