@@ -77,7 +77,7 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
   List<Widget> _initializeTopLevelPages() {
     return [
       Home(onToggle: toggleContainer, Drawable: drawerOpen),
-      Search(enableReturn: true),
+      Search(enableReturn: true, onToggle: toggleContainer),
       Musicbox(),
       Library(Drawable: drawerOpen),
       Notif()
@@ -335,27 +335,27 @@ class MainWrapperState extends State<MainWrapper> with SingleTickerProviderState
                         page: 1,
                         label: "Search",
                       ),
-                      _bottomAppBarItem(
-                        context,
-                        icon: Icons.linear_scale_outlined, // Use IconData for Library
-                        svgIcon: '', // Optional SVG if preferred
-                        page: 2,
-                        label: "Music Box",
-                      ),
-                      _bottomAppBarItem(
-                        context,
-                        icon: Icons.library_music_outlined, // Use IconData for Library
-                        svgIcon: '', // Optional SVG if preferred
-                        page: 3,
-                        label: "My Library",
-                      ),
-                      _bottomAppBarItem(
-                        context,
-                        icon: Icons.notifications_on, // Use IconData for Library
-                        svgIcon: '', // Optional SVG if preferred
-                        page: 4,
-                        label: "Notification",
-                      ),
+                      // _bottomAppBarItem(
+                      //   context,
+                      //   icon: Icons.linear_scale_outlined, // Use IconData for Library
+                      //   svgIcon: '', // Optional SVG if preferred
+                      //   page: 2,
+                      //   label: "Music Box",
+                      // ),
+                      // _bottomAppBarItem(
+                      //   context,
+                      //   icon: Icons.library_music_outlined, // Use IconData for Library
+                      //   svgIcon: '', // Optional SVG if preferred
+                      //   page: 3,
+                      //   label: "My Library",
+                      // ),
+                      // _bottomAppBarItem(
+                      //   context,
+                      //   icon: Icons.notifications_on, // Use IconData for Library
+                      //   svgIcon: '', // Optional SVG if preferred
+                      //   page: 4,
+                      //   label: "Notification",
+                      // ),
                     ],
                   ),
                 ),

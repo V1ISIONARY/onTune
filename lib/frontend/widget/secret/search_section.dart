@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:ontune/frontend/pages/home.dart';
+import 'package:ontune/frontend/widget/floating_music.dart';
 import '../../../backend/services/model/randomized.dart';
 
 class SearchSection extends StatelessWidget {
   final Randomized song;
+  final VoidCallback onToggle;
+  final GlobalKey<FloatingMusicState> floatingMusicKey;
 
   const SearchSection({
     Key? key,
     required this.song,
+    required this.onToggle,
+    required this.floatingMusicKey
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        onToggle.call();
+        Home.updatedUrl.value = song.audioUrl;
+        Home.updatedTitle.value = song.musicTitle;
+        Home.updatedWriter.value = song.musicWriter;
+        Home.updatedIcon.value = song.thumnail;
+      },
       child: IntrinsicHeight(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

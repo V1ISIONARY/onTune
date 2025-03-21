@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:ontune/backend/services/model/randomized.dart';
+import 'package:ontune/backend/services/model/songs.dart';
+import 'package:ontune/backend/services/model/weather_model.dart';
 import 'package:ontune/backend/services/repository.dart';
 import '../../frontend/widget/secret/actions/artist.dart';
 
@@ -50,5 +52,37 @@ class OnTuneBloc extends Bloc<OnTuneEvent, OnTuneState> {
         emit(ErrorTune("Failed to fetch artist"));
       }
     });
+
+    on<FindLyrics>((event, emit) async {
+      emit(LoadingTune());
+
+      try {
+        final lyrics = await repository.fetchLyrics(event.title, event.writer);
+        emit(FetchedLyrics(lyrics.lyrics));
+      } catch (e) {
+        emit(ErrorTune(e.toString()));
+      }
+    });
+
+    on<FetchWeather>((event, emit) async {
+      emit(LoadingTune());
+      try {
+        final weather = await repository.fetchWeather(event.city);
+        emit(WeatherLoaded(weather));
+      } catch (e) {
+        emit(const ErrorTune("City not found"));
+      }
+    });
+
+    on<FetchSongs>((event, emit) async {
+      emit(LoadingTune());
+      try {
+        final songs = await repository.fetchSongs(event.query);
+        emit(SongLoaded(songs));
+      } catch (e) {
+        emit(ErrorTune(e.toString()));
+      }
+    });
+
   }
 }

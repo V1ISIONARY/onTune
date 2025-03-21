@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
 import 'package:ontune/backend/services/model/artist.dart';
+import 'package:ontune/backend/services/model/lyrics.dart';
+import 'package:ontune/backend/services/model/songs.dart';
+import 'package:ontune/backend/services/model/weather_model.dart';
 import 'model/classification.dart';
 import 'model/randomized.dart';
 
@@ -38,7 +41,7 @@ class OnTuneRepository {
       print(youtubeUrl);
 
       final response = await http.get(
-        Uri.parse('$apiURL/get-spotify-audio?url=$youtubeUrl') // Use the raw youtubeUrl directly
+        Uri.parse('$apiURL/get-spotify-audio?url=$youtubeUrl') 
       );
 
       print('Response status: ${response.statusCode}');
@@ -63,8 +66,9 @@ class OnTuneRepository {
             musicTitle: title ?? 'Lyrics not available',
             musicWriter: writer ?? 'Lyrics not available',
             audioUrl: audioUrl ?? 'Lyrics not available',
-            lyrics: lyrics ?? 'Lyrics not available', // Default value if lyrics is null
+            lyrics: lyrics ?? 'Lyrics not available',
           );
+
         } else {
           print('Error: audioUrl is null');
           return null;
@@ -104,7 +108,7 @@ class OnTuneRepository {
     }
   }
 
-  Future<Artist> fetchLyics(String title, String writer) async {
+  Future<Lyrics> fetchLyrics(String title, String writer) async {
     try {
       final response = await http.get(Uri.parse('$apiURL/get_lyrics?title=$title&writer=$writer'));
 
@@ -125,6 +129,27 @@ class OnTuneRepository {
     } catch (e) {
       print("Error fetching artist: $e");
       throw Exception("Error fetching artist data");
+    }
+  }
+
+  Future<WeatherModel> fetchWeather(String city) async {
+    final response = await http.get(Uri.parse("$apiURL/weather?city=$city"));
+
+    if (response.statusCode == 200) {
+      return WeatherModel.fromJson(json.decode(response.body));
+    } else {
+      throw Exception("Failed to load weather data");
+    }
+  }
+
+  Future<List<SongModel>> fetchSongs(String query) async {
+    final response = await http.get(Uri.parse('$apiURL/search_song?query=$query'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((json) => SongModel.fromJson(json)).toList();
+    } else {
+      throw Exception("Failed to fetch songs");
     }
   }
 

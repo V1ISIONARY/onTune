@@ -34,6 +34,27 @@ class FetchedArtist extends OnTuneState {
   List<Object> get props => [artist];
 }
 
+class FetchedLyrics extends OnTuneState {
+  final String lyrics;
+
+  const FetchedLyrics(this.lyrics);
+  @override
+  List<Object> get props => [lyrics];
+}
+
+class WeatherLoaded extends OnTuneState {
+  final WeatherModel weather;
+  const WeatherLoaded(this.weather);
+
+  @override
+  List<Object> get props => [weather];
+}
+
+class SongLoaded extends OnTuneState {
+  final List<SongModel> songs;
+  const SongLoaded(this.songs);
+}
+
 class ErrorTune extends OnTuneState {
   final String response;
   const ErrorTune(this.response);

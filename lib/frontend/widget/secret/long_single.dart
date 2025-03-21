@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
-
+import 'package:ontune/frontend/pages/home.dart';
+import 'package:ontune/frontend/widget/floating_music.dart';
 import '../../../backend/services/model/randomized.dart';
 
 class LongSingle extends StatelessWidget {
 
-  final Randomized song;
+  final Randomized? song;
+  final VoidCallback? onToggle;
+  final GlobalKey<FloatingMusicState>? floatingMusicKey;
 
   const LongSingle({
     Key? key,
     required this.song,
+    this.onToggle,
+    this.floatingMusicKey
   }) : super(key: key);
 
   @override
@@ -17,7 +22,13 @@ class LongSingle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap:(){},
+          onTap:(){
+            onToggle?.call();
+            Home.updatedUrl.value = song!.audioUrl;
+            Home.updatedTitle.value = song!.musicTitle;
+            Home.updatedWriter.value = song!.musicWriter;
+            Home.updatedIcon.value = song!.thumnail;
+          },
           child: Container(
             height: 40,
             width: double.infinity, // Fixed width for each container
@@ -41,7 +52,7 @@ class LongSingle extends StatelessWidget {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(2),
                           child: Image.network(
-                            song.thumnail,
+                            song!.thumnail,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -56,11 +67,11 @@ class LongSingle extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                              song.musicTitle,
+                              song!.musicTitle,
                                 style: TextStyle(color: Colors.white, fontSize: 13.0)
                               ),
                               Text(
-                                song.musicWriter,
+                                song!.musicWriter,
                                 style: TextStyle(color: Colors.white54, fontSize: 8.0)
                               )
                             ],

@@ -55,16 +55,16 @@ class MusicSection extends StatelessWidget {
                     ]
                   )
                 ),
-                Positioned(
-                  right: 20,
-                  bottom: 0,
-                  child: InkWell(
-                    onTap: () {},
-                    child: Text('View all >',
-                      style: TextStyle(color: Colors.white38, fontSize: 10.0)
-                    )
-                  )
-                )
+                // Positioned(
+                //   right: 20,
+                //   bottom: 0,
+                //   child: InkWell(
+                //     onTap: () {},
+                //     child: Text('View all >',
+                //       style: TextStyle(color: Colors.white38, fontSize: 10.0)
+                //     )
+                //   )
+                // )
               ],
             ),
           )
@@ -79,11 +79,11 @@ class MusicSection extends StatelessWidget {
               return Padding(
                 padding: EdgeInsets.only(left: index == 0 ? 20 : 0, right: 10),
                 child: single_music_action(
-                  onToggle: onToggle,
                   musicTitle: song.musicTitle,
                   musicWriter: song.musicWriter,
                   audioUrl: song.audioUrl,
                   thumbnail: song.thumnail,
+                  onToggle: onToggle,
                   floatingMusicKey: floatingMusicKey,
                 ),
               );

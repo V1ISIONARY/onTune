@@ -280,24 +280,24 @@ class FloatingMusicState extends State<FloatingMusic> with SingleTickerProviderS
                                     },
                                   ),
                                 ),
-                                Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: (){},
-                                        child: Icon(Icons.connected_tv_sharp, color: Colors.white)
-                                      ),
-                                      SizedBox(width: 20),
-                                      GestureDetector(
-                                        onTap: (){
-                                        },
-                                        child: Icon(Icons.play_arrow, color: Colors.white)
-                                      ),
-                                    ],
-                                  ),
-                                )
+                                // Container(
+                                //   margin: EdgeInsets.only(right: 10),
+                                //   child: Row(
+                                //     mainAxisSize: MainAxisSize.min,
+                                //     children: [
+                                //       GestureDetector(
+                                //         onTap: (){},
+                                //         child: Icon(Icons.connected_tv_sharp, color: Colors.white)
+                                //       ),
+                                //       SizedBox(width: 20),
+                                //       GestureDetector(
+                                //         onTap: (){
+                                //         },
+                                //         child: Icon(Icons.play_arrow, color: Colors.white)
+                                //       ),
+                                //     ],
+                                //   ),
+                                // )
                               ],
                             ),
                           ),

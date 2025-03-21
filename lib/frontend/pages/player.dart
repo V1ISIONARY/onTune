@@ -67,6 +67,8 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    
+    context.read<OnTuneBloc>().add(FindLyrics(musicTitle.toString(), writer.toString()));
 
     _audioController.audioPlayer.playerStateStream.listen((state) {
       setState(() => _isPlaying = state.playing);
@@ -151,7 +153,7 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
           else if (state is FetchedArtist) {
             fetchedArtist = state; 
             writer = fetchedArtist!.artist; 
-            description = fetchedArtist!.description; 
+            description = fetchedArtist!.description;
           } 
           else if (state is FetchedAudio) {
             fetchedAudio = state;
@@ -312,15 +314,15 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                     style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Colors.white),
                   ),
                   centerTitle: true,
-                  actions: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: const Icon(Icons.more_horiz, color: Colors.white),
-                      ),
-                    )
-                  ],
+                  // actions: [
+                  //   Padding(
+                  //     padding: EdgeInsets.only(right: 10),
+                  //     child: GestureDetector(
+                  //       onTap: () {},
+                  //       child: const Icon(Icons.more_horiz, color: Colors.white),
+                  //     ),
+                  //   )
+                  // ],
                 ),
                 Container(
                   child: Column(
@@ -477,32 +479,32 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                                       ],
                                     )
                                   ),
-                                  Positioned(
-                                    top: 20,
-                                    right: 20,
-                                    child: Container(
-                                      height: 40,
-                                      child: Row(
-                                        children: [
-                                          Center(
-                                            child: Icon(
-                                              size: 20,
-                                              color: Colors.white,
-                                              Icons.headset_rounded
-                                            )
-                                          ),
-                                          SizedBox(width: 10),
-                                          Center(
-                                            child: Icon(
-                                              size: 20,
-                                              color: Colors.white,
-                                              Icons.heart_broken
-                                            )
-                                          )
-                                        ]
-                                      ),
-                                    )
-                                  )
+                                  // Positioned(
+                                  //   top: 20,
+                                  //   right: 20,
+                                  //   child: Container(
+                                  //     height: 40,
+                                  //     child: Row(
+                                  //       children: [
+                                  //         Center(
+                                  //           child: Icon(
+                                  //             size: 20,
+                                  //             color: Colors.white,
+                                  //             Icons.headset_rounded
+                                  //           )
+                                  //         ),
+                                  //         SizedBox(width: 10),
+                                  //         Center(
+                                  //           child: Icon(
+                                  //             size: 20,
+                                  //             color: Colors.white,
+                                  //             Icons.heart_broken
+                                  //           )
+                                  //         )
+                                  //       ]
+                                  //     ),
+                                  //   )
+                                  // )
                                 ],
                               ),
                             ),
@@ -539,26 +541,26 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left: 20),
-                                  child: GestureDetector(
-                                    onTap: (){},
-                                    child: Icon(
-                                      Icons.crop_rounded,
-                                      color: widget.textColor,
-                                    ),
-                                  )
-                                ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: (){},
-                                    child: Icon(
-                                      size: 30,
-                                      Icons.skip_previous,
-                                      color: widget.textColor,
-                                    ),
-                                  )
-                                ),
+                                // Padding(
+                                //   padding: EdgeInsets.only(left: 20),
+                                //   child: GestureDetector(
+                                //     onTap: (){},
+                                //     child: Icon(
+                                //       Icons.crop_rounded,
+                                //       color: widget.textColor,
+                                //     ),
+                                //   )
+                                // ),
+                                // Expanded(
+                                //   child: GestureDetector(
+                                //     onTap: (){},
+                                //     child: Icon(
+                                //       size: 30,
+                                //       Icons.skip_previous,
+                                //       color: widget.textColor,
+                                //     ),
+                                //   )
+                                // ),
                                 Expanded(
                                   child: Container(
                                     width: 70,
@@ -579,26 +581,26 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                                     )
                                   ),
                                 ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: (){},
-                                    child:  Icon(
-                                      size: 30,
-                                      Icons.skip_next,
-                                      color: widget.textColor, 
-                                    ),
-                                  )
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(right: 20),
-                                  child: GestureDetector(
-                                    onTap: (){},
-                                    child:  Icon(
-                                      Icons.loop_outlined,
-                                      color: widget.textColor, 
-                                    ),
-                                  )
-                                ),
+                                // Expanded(
+                                //   child: GestureDetector(
+                                //     onTap: (){},
+                                //     child:  Icon(
+                                //       size: 30,
+                                //       Icons.skip_next,
+                                //       color: widget.textColor, 
+                                //     ),
+                                //   )
+                                // ),
+                                // Padding(
+                                //   padding: EdgeInsets.only(right: 20),
+                                //   child: GestureDetector(
+                                //     onTap: (){},
+                                //     child:  Icon(
+                                //       Icons.loop_outlined,
+                                //       color: widget.textColor, 
+                                //     ),
+                                //   )
+                                // ),
                                 // IconButton(
                                 //   icon: Icon(_isMuted ? Icons.volume_off : Icons.volume_up, color: widget.textColor),
                                 //   onPressed: _toggleMute,
@@ -700,19 +702,14 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  Text(
-                                    "6.6M monthly listeners",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.white54,
-                                    ),
-                                  ),
+                                  // Text(
+                                  //   "6.6M monthly listeners",
+                                  //   style: TextStyle(
+                                  //     fontSize: 10,
+                                  //     color: Colors.white54,
+                                  //   ),
+                                  // ),
                                 ],
-                              ),
-                              Container(
-                                color: Colors.white,
-                                width: 60,
-                                height: 25,
                               ),
                             ],
                           ),
@@ -752,20 +749,28 @@ class _PlayerState extends State<Player> with TickerProviderStateMixin {
                   style: TextStyle(fontSize: 13, color: Colors.white)
                 ),
                 SizedBox(height: 5),
-                Text(
-                  'Lyrics',
-                  style: TextStyle(fontSize: 11, color: Colors.white54)
+                BlocBuilder<OnTuneBloc, OnTuneState>(
+                  builder: (context, state) {
+                    if (state is LoadingTune) {
+                      return CircularProgressIndicator();
+                    } else if (state is FetchedLyrics) {
+                      return Text(state.lyrics, style: TextStyle(color: Colors.white));
+                    } else if (state is ErrorTune) {
+                      return Text("Error: ${state.response}", style: TextStyle(color: Colors.red));
+                    }
+                    return Text("No lyrics found", style: TextStyle(color: Colors.grey));
+                  },
                 ),
               ],
             )
           ),
-          MusicSectionPlayer(
-            title: "Tredending Music",
-            subtitle: "Latest Hits of ${writer}",
-            songs: demoSongs, 
-          ),
-          MoreMusicLike(title: 'More Music like $writer', songs: randomdemoSongs),
-          AlbumSection(title: 'Artist Album', songs: randomdemoSongs),
+          // MusicSectionPlayer(
+          //   title: "Tredending Music",
+          //   subtitle: "Latest Hits of ${writer}",
+          //   songs: demoSongs, 
+          // ),
+          // MoreMusicLike(title: 'More Music like $writer', songs: randomdemoSongs),
+          // AlbumSection(title: 'Artist Album', songs: randomdemoSongs),
           Container(
             height: 200,
             width: double.infinity,
